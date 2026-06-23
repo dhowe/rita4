@@ -67,7 +67,7 @@ const testEsm: Options = {
   format: ['esm'],
   platform: "node",
   name: "test",
-  entry: ['test/[^i]*.js'],
+  entry: ['test/[^i]*.js', '!test/arpabet-ipa.js', '!test/harvard-tests.js'],
   outDir: 'test/dist',
   watch: false,
   clean: false,

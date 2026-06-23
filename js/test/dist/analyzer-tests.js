@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { RiTa } from "./index.js";
 describe("Analyzer", function() {
   let hasLex = true;
-  it("Should call analyze-inline", function() {
+  it("Should call analyzer.analyze", function() {
     let data = RiTa.analyzer.analyze("abandon");
     expect(data.phones).eq("ah-b-ae-n-d-ah-n");
     expect(data.stresses).eq("0/1/0");
@@ -315,38 +315,6 @@ describe("Analyzer", function() {
     if (!hasLex) return;
     expect(RiTa.phones("deforestations")).eq("d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z");
     expect(RiTa.phones("schizophrenias")).eq("s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z");
-    RiTa.SILENCE_LTS = silent;
-  });
-  it("Should call phones(raw)", function() {
-    let silent = RiTa.SILENCE_LTS;
-    RiTa.SILENCE_LTS = true;
-    let result, answer;
-    let opts = { "rawPhones": true };
-    eq(RiTa.phones("", opts), "");
-    eq(RiTa.phones("b", opts), "b");
-    eq(RiTa.phones("B", opts), "b");
-    eq(RiTa.phones("The", opts), "dh-ah");
-    eq(RiTa.phones("flowers", opts), "f-l-aw-er-z");
-    eq(RiTa.phones("mice", opts), "m-ay-s");
-    eq(RiTa.phones("ant", opts), "ae-n-t");
-    eq(RiTa.phones("The.", opts), "dh-ah .");
-    result = RiTa.phones("The boy jumped over the wild dog.", opts);
-    answer = hasLex ? "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-ao-g ." : "dh-ah b-oy jh-ah-m-p-t ow-v-er dh-ah w-ay-l-d d-aa-g .";
-    eq(result, answer);
-    result = RiTa.phones("The boy ran to the store.", opts);
-    answer = hasLex ? "dh-ah b-oy r-ae-n t-uw dh-ah s-t-ao-r ." : "dh-ah b-oy r-ah-n t-ow dh-ah s-t-ao-r .";
-    eq(result, answer);
-    result = RiTa.phones("The dog ran faster than the other dog.  But the other dog was prettier.", opts);
-    answer = hasLex ? "dh-ah d-ao-g r-ae-n f-ae-s-t-er dh-ae-n dh-ah ah-dh-er d-ao-g . b-ah-t dh-ah ah-dh-er d-ao-g w-aa-z p-r-ih-t-iy-er ." : "dh-ah d-aa-g r-ah-n f-ae-s-t-er th-ae-n dh-ah ah-dh-er d-aa-g . b-ah-t dh-ah ah-dh-er d-aa-g w-ah-z p-r-eh-t-iy-er .";
-    eq(result, answer);
-    eq(RiTa.phones("quiche", opts), hasLex ? "k-iy-sh" : "k-w-ih-sh");
-    eq(RiTa.phones("said", opts), hasLex ? "s-eh-d" : "s-ey-d");
-    eq(RiTa.phones("chevrolet", opts), hasLex ? "sh-eh-v-r-ow-l-ey" : "ch-eh-v-r-ow-l-ah-t");
-    eq(RiTa.phones("women", opts), hasLex ? "w-ih-m-eh-n" : "w-ow-m-eh-n");
-    eq(RiTa.phones("genuine", opts), hasLex ? "jh-eh-n-y-uw-w-ah-n" : "jh-eh-n-y-ah-ay-n");
-    if (!hasLex) return;
-    expect(RiTa.phones("deforestations", opts)).eq("d-ih-f-ao-r-ih-s-t-ey-sh-ah-n-z");
-    expect(RiTa.phones("schizophrenias", opts)).eq("s-k-ih-t-s-ah-f-r-iy-n-iy-ah-z");
     RiTa.SILENCE_LTS = silent;
   });
   it("Should call syllables", function() {
@@ -882,6 +850,42 @@ describe("Analyzer", function() {
     if (!hasLex) return;
     expect(RiTa.analyzer.computePhones("1")).eql(["w", "ah", "n"]);
     expect(RiTa.analyzer.computePhones("50")).eql(["f", "ay", "v", "z", "ih", "r", "ow"]);
+  });
+  it("Should call analyze with ipaPhones option", function() {
+    let feats = RiTa.analyze("", { ipaPhones: true });
+    expect(feats.phones).eq("");
+    feats = RiTa.analyze("cat", { ipaPhones: true });
+    expect(feats.phones).eq("k\xE6t");
+    expect(feats.syllables).eq("k-ae-t");
+    expect(feats.stresses).eq("1");
+    feats = RiTa.analyze("abandon", { ipaPhones: true });
+    expect(feats.phones).eq("\u0259\u02C8b\xE6nd\u0259n");
+    feats = RiTa.analyze("the", { ipaPhones: true });
+    expect(feats.phones).eq("\xF0\u0259");
+    feats = RiTa.analyze("The birch canoe slid on the smooth planks", { ipaPhones: true });
+    expect(feats.phones).eq("\xF0\u0259 b\u025Crt\u0283 k\u0259\u02C8nu\u02D0 sl\u026Ad \u0251\u02D0n \xF0\u0259 smu\u02D0\xF0 pl\xE6\u014Bkz");
+    feats = RiTa.analyze("The dog ran.", { ipaPhones: true });
+    expect(feats.phones).eq("\xF0\u0259 d\u0254\u02D0\u0261 \u0279\xE6n");
+    feats = RiTa.analyze("abandon");
+    expect(feats.phones).eq("ah-b-ae-n-d-ah-n");
+    feats = RiTa.analyze("abandon", { ipaPhones: false });
+    expect(feats.phones).eq("ah-b-ae-n-d-ah-n");
+  });
+  it("Should call phones with ipaPhones option", function() {
+    expect(RiTa.phones("", { ipaPhones: true })).eq("");
+    expect(RiTa.phones("cat", { ipaPhones: true })).eq("k\xE6t");
+    expect(RiTa.phones("abandon", { ipaPhones: true })).eq("\u0259\u02C8b\xE6nd\u0259n");
+    expect(RiTa.phones("the", { ipaPhones: true })).eq("\xF0\u0259");
+    expect(RiTa.phones("The birch canoe slid on the smooth planks", { ipaPhones: true })).eq("\xF0\u0259 b\u025Crt\u0283 k\u0259\u02C8nu\u02D0 sl\u026Ad \u0251\u02D0n \xF0\u0259 smu\u02D0\xF0 pl\xE6\u014Bkz");
+    expect(RiTa.phones("abandon")).eq("ah-b-ae-n-d-ah-n");
+    expect(RiTa.phones("abandon", { ipaPhones: false })).eq("ah-b-ae-n-d-ah-n");
+  });
+  it("Should call syllables with ipaPhones option", function() {
+    expect(RiTa.syllables("abandon", { ipaPhones: true })).eq("\u0259/\u02C8b\xE6n/d\u0259n");
+    expect(RiTa.syllables("the", { ipaPhones: true })).eq("\xF0\u0259");
+    expect(RiTa.syllables("The birch canoe slid on the smooth planks", { ipaPhones: true })).eq("\xF0\u0259 b\u025Crt\u0283 k\u0259/\u02C8nu\u02D0 sl\u026Ad \u0251\u02D0n \xF0\u0259 smu\u02D0\xF0 pl\xE6\u014Bkz");
+    expect(RiTa.syllables("The dog ran.", { ipaPhones: true })).eq("\xF0\u0259 d\u0254\u02D0\u0261 \u0279\xE6n");
+    expect(RiTa.syllables("abandon")).eq("ah/b-ae-n/d-ah-n");
   });
   function ok(a, m) {
     expect(a, m).to.be.true;

@@ -26,7 +26,7 @@ let exampleTokens = [
   SuffixArray.SEQ_END_TOKEN
 ];
 let sample = "One reason people lie is to achieve personal power. Achieving personal power is helpful for one who pretends to be more confident than he really is. For example, one of my friends threw a party at his house last month. He asked me to come to his party and bring a date. However, I did not have a girlfriend. One of my other friends, who had a date to go to the party with, asked me about my date. I did not want to be embarrassed, so I claimed that I had a lot of work to do. I said I could easily find a date even better than his if I wanted to. I also told him that his date was ugly. I achieved power to help me feel confident; however, I embarrassed my friend and his date. Although this lie helped me at the time, since then it has made me look down on myself.";
-describe("Backoff", () => {
+describe("Markov.Backoff", () => {
   BackoffModel.SILENT = 1;
   it("BackoffModel.constructor", () => {
     let lm1 = new BackoffModel(exampleTokens);
@@ -62,54 +62,6 @@ describe("Backoff", () => {
     SuffixArray.__dict__.forEach((f) => {
       expect(copy.suffixes[f], f).not.to.be.undefined;
       expect(copy.suffixes[f], f).to.deep.equal(bom.suffixes[f]);
-    });
-  });
-  it.skip("BackoffModel.nextToken.cache", () => {
-    let lm = new BackoffModel(exampleStr);
-    let results = { fox: 0, dog: 0 };
-    for (let i = 0; i < 10; i++) {
-      let res = lm.nextToken(["The", "brown"]);
-      expect(res.query).to.deep.equal(["The", "brown"]);
-      expect(res.choices).to.deep.equal({ fox: 0.5, dog: 0.5 });
-      expect(res.token).to.satisfy((t) => t === "fox" || t === "dog");
-      expect(res.n).to.equal(3);
-      results[res.token]++;
-    }
-    lm = new BackoffModel(sample);
-    results = lm.nextToken("I did not".split(" "), { debug: 0, debugCache: 0 });
-    expect(results.query).to.deep.equal("I did not".split(" "));
-    expect(results.choices).to.deep.equal({ have: 0.5, want: 0.5 });
-    expect(results.token).to.satisfy((t) => t === "have" || t === "want");
-    expect(results.n).to.equal(4);
-  });
-  it.skip("BackoffModel.nextToken", () => {
-    let lm = new BackoffModel(exampleStr);
-    let results = { fox: 0, dog: 0 };
-    for (let i = 0; i < 10; i++) {
-      let res2 = lm.nextToken(["The", "brown"]);
-      expect(res2.query).to.deep.equal(["The", "brown"]);
-      expect(res2.choices).to.deep.equal({ fox: 0.5, dog: 0.5 });
-      expect(res2.token).to.satisfy((t) => t === "fox" || t === "dog");
-      expect(res2.n).to.equal(3);
-      results[res2.token]++;
-    }
-    expect(results.dog).to.be.above(0);
-    expect(results.fox).to.be.above(0);
-    let res = lm.nextToken(["brown", "fox"]);
-    expect(res.choices).to.deep.equal({ jumps: 1 });
-    expect(res.query).to.deep.equal(["brown", "fox"]);
-    expect(res.token).to.equal("jumps");
-    res = lm.nextToken(["Miss", "brown", "fox"], { n: 2 });
-    expect(res?.token).to.equal("jumps");
-    res = lm.nextToken(["Miss", "brown", "fox"]);
-    expect(res?.token).to.equal(void 0);
-  });
-  it.skip("BackoffModel.nextToken.start", () => {
-    let inp = [...exampleTokens, SuffixArray.SEQ_START_TOKEN, "The", "brown", "dog", "leapt", "over", "the", "fence", ".", SuffixArray.SEQ_END_TOKEN, SuffixArray.SEQ_START_TOKEN, "A", "brown", "dog", ".", SuffixArray.SEQ_END_TOKEN];
-    let lm = new BackoffModel(inp);
-    let next = lm.nextToken(["<s>"], { debug: 0 });
-    expect(next).to.satisfy((res) => {
-      return (res.token === "The" || res.token === "A") && res.choices["A"] === 0.25 && res.choices["The"] === 0.75 && res.query[0] === "<s>";
     });
   });
   it("BackoffModel.generationPaths", () => {
@@ -251,73 +203,5 @@ describe("Backoff", () => {
     expect(() => lm.generationPaths(3, prompt, { ...base, temp: 2 })).to.not.throw();
     expect(() => lm.generationPaths(3, prompt, { ...base, badKey: true })).to.throw();
     expect(() => lm.streamTokens(3, prompt, { ...base, badKey: true }).next()).to.throw();
-  });
-  it.skip("BackoffModel.generate.history", () => {
-    let lm = new BackoffModel(exampleStr);
-    let query = ["The", "brown", "fox", "jumps", "over", "the", "lazy"];
-    let expected = "The brown fox jumps over the lazy dog.";
-    for (let n2 = 2; n2 < 5; n2++) {
-      let res = lm.generate(n2, query, { debug: 0 });
-      expect(res.text.startsWith("The")).is.true;
-      expect(res.text.endsWith(".")).is.true;
-    }
-    let n = 6;
-    let { text, history } = lm.generate(n, query, { debug: 0 });
-    expect(text.startsWith("The")).is.true;
-    expect(text.endsWith(".")).is.true;
-    let first = history[0];
-    expect(first.token).eq(0);
-    expect(first.query).deep.equal(query);
-    expect(first.n).eq(6);
-    let second = history[1];
-    expect(second.query).deep.equal(query.slice(-n + 1));
-    ;
-    expect(second.token).eq("dog");
-    expect(second.n).eq(6);
-    let last = history[history.length - 1];
-    expect(last.query).deep.equal(["jumps", "over", "the", "lazy", "dog"]);
-    expect(last.token).eq(".");
-    expect(last.n).eq(6);
-    let tokens = history.reduce((acc, h) => {
-      if (h.token) acc.push(h.token);
-      else acc.push(...h.query);
-      return acc;
-    }, []);
-    expect(RiTa.untokenize(tokens)).eql(expected);
-  });
-  it.skip("BackoffModel.generate.maxN", () => {
-    let lm = new BackoffModel();
-    lm.addText(sample);
-    let result = lm.generate(3, "I did not".split(" "), { debug: 0 });
-    if (0) console.log("'" + result.text + '"\n' + result.history.map((h, i) => i + ": " + JSON.stringify({
-      query: h.query.join(","),
-      choices: h.choices,
-      token: h.token,
-      n: h.n
-    }, 0, 2)).join("\n"));
-    result.history.forEach((h) => expect(h.n).to.be.at.most(3));
-    let text = result.text;
-    expect(typeof text === "string").is.true;
-    expect(text[0]).eq(text[0].toUpperCase());
-    expect(/[!?.]$/.test(text)).is.true;
-  });
-  it.skip("BackoffModel.generate.forceOriginal", () => {
-    let lm = new BackoffModel();
-    lm.addText(sample);
-    let result = lm.generate("I did not".split(" "), { forceOriginal: true, minN: 4, debug: 1 });
-    console.log(result.history.map((h, i) => i + ": " + JSON.stringify({
-      query: h.query.join("|"),
-      choices: h.choices,
-      token: h.token,
-      n: h.n
-    }, 0, 2)).join("\n") + "\n'" + result.text + "'");
-    return;
-    result = lm.generate("I did not".split(" "), { maxN: 3, forceOriginal: true, debug: 0 });
-    let text = result.text;
-    console.log(text, sample.includes(text), sample.indexOf(text));
-    expect(typeof text === "string").is.true;
-    expect(text[0]).eq(text[0].toUpperCase());
-    expect(/[!?.]$/.test(text)).is.true;
-    expect(sample.includes(text)).is.false;
   });
 });

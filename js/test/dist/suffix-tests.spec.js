@@ -817,7 +817,7 @@ let longerTokens = [
   "</s>"
 ];
 SuffixArray.SILENT = true;
-describe("SuffixArray", () => {
+describe("Markov.SuffixArray", () => {
   it("SuffixArray.constructor", function() {
     let sa;
     sa = new SuffixArray(["b", "c", "a"]);
