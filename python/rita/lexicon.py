@@ -78,7 +78,7 @@ class Lexicon:
         if self._data is not None:
             return self._data
         if self._dict_cache is None:
-            p = os.path.join(os.path.dirname(__file__), 'rita_dict.json')
+            p = os.path.join(os.path.dirname(__file__), '..', '..', 'shared', 'rita_dict.json')
             with open(p) as f:
                 self._dict_cache = json.load(f)
         return self._dict_cache
