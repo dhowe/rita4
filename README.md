@@ -1,6 +1,6 @@
 # RiTa — mono-repo
 
-This repository contains all RiTa implementations and documentation in one place.
+This repository contains all RiTa implementations and documentation
 
 ```
 rita4/
@@ -79,7 +79,7 @@ Reference pages are in `docs/reference/` and tutorials in `docs/tutorials/`. Bot
 
 ## Shared dictionary (`shared/`)
 
-`shared/rita_dict.json` is the canonical source for the RiTa lexicon. All three implementations load from it:
+`shared/rita_dict.json` is the source for the RiTa lexicon. All three implementations use it:
 
 - **Python** — loaded at runtime via a `__file__`-relative path in each module
 - **JS / Java** — use JS-module wrappers (`js/src/rita_dict.js`, `java/src/main/resources/rita/rita_dict.js`)
@@ -94,7 +94,7 @@ node scripts/gen-dicts.js
 
 ## CI
 
-GitHub Actions workflows are path-scoped and only trigger when their subtree (or `shared/`) changes:
+GitHub Actions workflows are path-scoped and trigger when their subtree (or `shared/`) changes:
 
 | Workflow | Trigger paths | Node/JDK/Python versions |
 |---|---|---|
