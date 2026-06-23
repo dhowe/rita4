@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <div id="content"></div>
+
+  <script type="module">
+    import { RiTa } from "https://esm.sh/rita";
+    let html = '<h3>RiTa v' + RiTa.VERSION + '</h3>';
+    Object.getOwnPropertyNames(RiTa)
+      .filter(p => !p.startsWith('_') && typeof RiTa[p] === "function")
+      .forEach(p => html += `RiTa.${p}` + (/^class/.test(RiTa[p] + "") ? '' : '()') + '<br>');
+    document.getElementById("content").innerHTML = html; 
+  </script>
+
+</body>
+
+</html>

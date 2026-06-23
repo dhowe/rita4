@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+
+<head>
+  <script src="../../dist/rita.min.js"></script>
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <div id="content"></div>
+  <script>
+    let html = '<h3>RiTa v' + RiTa.VERSION + '</h3>';
+    Object.getOwnPropertyNames(RiTa)
+      .filter(p => !p.startsWith('_')
+        && typeof RiTa[p] === "function")
+      .forEach(p => html += `RiTa.${p}()<br/>`);
+    document.getElementById("content").innerHTML = html; 
+  </script>
+
+</body>
+
+</html>
