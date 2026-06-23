@@ -3,6 +3,8 @@
 
 types/generated
 dist
+!test/dist/
+!test/dist/**
 misc
 # Logs
 logs

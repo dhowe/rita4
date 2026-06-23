@@ -134,7 +134,7 @@ _DICT = None
 def _get_dict():
     global _DICT
     if _DICT is None:
-        path = os.path.join(os.path.dirname(__file__), "rita_dict.json")
+        path = os.path.join(os.path.dirname(__file__), '..', '..', 'shared', 'rita_dict.json')
         with open(path) as f:
             _DICT = json.load(f)
     return _DICT

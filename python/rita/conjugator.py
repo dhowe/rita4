@@ -28,7 +28,7 @@ _verbs_dbl_cache = None
 def _get_dict():
     global _dict_cache
     if _dict_cache is None:
-        p = os.path.join(os.path.dirname(__file__), "rita_dict.json")
+        p = os.path.join(os.path.dirname(__file__), '..', '..', 'shared', 'rita_dict.json')
         with open(p) as f:
             _dict_cache = json.load(f)
     return _dict_cache
