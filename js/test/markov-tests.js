@@ -627,6 +627,18 @@ describe('Markov', function () {
     }
   });
 
+  // Reproduces annograms issue: tight maxLengthMatch + minLength + numSentences
+  // combo that rita 2.8.1 solves reliably (via per-token backtracking) but
+  // rita4's forward-only streamTokens cannot, because a single filtered-out
+  // candidate anywhere in the multi-sentence stream discards the whole
+  // attempt instead of retrying a different candidate at that position.
+  it('should call generate with tight maxLengthMatch+minLength (regression: annograms)', function () {
+    let rm = new RiMarkov(4, { maxLengthMatch: 7, trace: 0 });
+    rm.addText(sample4);
+    let sents = rm.generate({ numSentences: 5, minLength: 10 });
+    expect(sents.length).eq(5);
+  });
+
   it('should call completions', function () {
 
     let rm = new RiMarkov(4);
