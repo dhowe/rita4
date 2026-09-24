@@ -499,6 +499,12 @@ describe("Markov", function() {
       }
     }
   });
+  it("should call generate with tight maxLengthMatch+minLength (regression: annograms)", function() {
+    let rm = new RiMarkov(4, { maxLengthMatch: 7, trace: 0 });
+    rm.addText(sample4);
+    let sents = rm.generate({ numSentences: 5, minLength: 10 });
+    expect(sents.length).eq(5);
+  });
   it("should call completions", function() {
     let rm = new RiMarkov(4);
     rm.addText(sample);
