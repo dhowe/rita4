@@ -66,13 +66,14 @@ export default class BackoffModel extends SuffixGram {
    * @returns {string | string[]} string if count = 1, else array of sentences, length = numSentences
    */
   generateSentences(n, prompt, opts = {}) {
-    const numSentences = opts.numSentences ?? 2;
 
-    const dbug = opts.debug ? (...args) => console.log('[generateSentences]', ...args) : () => { };
+    // resolve options and aliases, apply defaults
+    const numSentences = opts.numSentences ?? 2;
     const perSentenceMax = opts.maxLength ?? BackoffModel.generationDefaults.maxLength;
     const perSentenceMin = opts.minLength ?? BackoffModel.generationDefaults.minLength;
     const maxAttempts = opts.maxAttempts ?? BackoffModel.generationDefaults.maxAttempts;
     const endToken = this.endToken, startToken = this.startToken;
+    const dbug = opts.debug ? (...args) => console.log('[generateSentences]', ...args) : () => { };
 
     // validate that the prompt exists in the corpus
     const nonEmptyPrompt = prompt.filter(t => t && t.length > 0);
@@ -81,11 +82,13 @@ export default class BackoffModel extends SuffixGram {
       throw Error(`generate() failed: prompt contains only whitespace tokens`);
     }
 
+    // helper to select a random sentence start if no prompt is provided
     const randomStarter = () => {
       if (validPrompt && validPrompt.length > 0) return [...validPrompt];
       return [SuffixGram.RiTa.randomizer.pselectObj(this.suffixes.startIndexDist())];
     };
 
+    // helper to extract sentences from a stream of tokens, splitting on endToken boundaries
     const extractSentences = (allTokens) => {
       let current = [];
       const sentences = [];
@@ -105,12 +108,13 @@ export default class BackoffModel extends SuffixGram {
       return sentences;
     }
 
+    // validate that the prompt, if provided, is valid and exists
     if (validPrompt.length > 0) {
       const dist = this.suffixes.pdist(validPrompt, { n });
       if (!dist || Object.keys(dist).length === 0) {
         throw Error(`generate() failed: prompt [${validPrompt.join(', ')}] not found in model`);
       }
-      // verify that the prompt is a valid sentence start if generating only one sentence
+      // verify that the prompt is a sentence start if generating only one sentence
       if (numSentences === 1) {
         const startDist = this.suffixes.startIndexDist();
         if (!startDist[validPrompt[0]]) {
@@ -119,12 +123,14 @@ export default class BackoffModel extends SuffixGram {
       }
     }
 
-    // MAIN LOOP: try to generate `numSentences` sentences up to `maxAttempts` times
+    // LOOP: try to generate `numSentences` sentences up to `maxAttempts` times
     let attempts = 0;
     while (++attempts <= maxAttempts) {
 
       // Fresh counter each attempt — stops the stream after `numSentences` end tokens
       let endsSeen = 0;
+
+      // options passed to streamTokens
       const options = {
         ...opts,
         allowSpecial: true,
@@ -147,11 +153,11 @@ export default class BackoffModel extends SuffixGram {
       // If we successfully generated the requested number of sentences, return them
       if (sentences.length === numSentences) return sentences;
 
-      // RETRY 
-      // Stream hit maxLength before producing enough sentences
+      // RETRY :
+      // Stream hit `options.maxLength` before producing enough sentences
       // OR we generated fewer than `numSentences` sentences 
-      // OR we generated a sentence that was too short/long 
-      // OR we generated a sentence that matched training data (> maxLengthMatch) 
+      // OR a sentence was included that was too short/long 
+      // OR that matched training data (> maxLengthMatch) 
     }
 
     throw Error(`generateSentences() failed after ${maxAttempts} attempts`);
