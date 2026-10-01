@@ -2,8 +2,7 @@ import SuffixGram from "./model.js";
 import SuffixArray from "./suffixes.js";
 
 /*
- * TODO:
- *    -- checkpointing load
+ * TODO: load checkpointing 
  */
 export default class BackoffModel extends SuffixGram {
 
@@ -47,10 +46,10 @@ export default class BackoffModel extends SuffixGram {
   }
 
   /**
-   * Generate `numSentences` sentences using a single continuous streamTokens call.
-   * Uses a stateful `generateUntil` that stops after seeing `numSentences` end tokens,
-   * so cross-sentence transitions are natural corpus n-gram transitions — no manual
-   * reseeding required.
+   * Generate `numSentences` sentences via a per-position backtracking search:
+   * builds a single multi-sentence token buffer, retrying/backtracking locally
+   * at the position where a candidate is rejected (by minLength/maxLength/maxLengthMatch)
+   * rather than reseeding the whole attempt from scratch.
    *
    * @param {number}   n            - n-gram order
    * @param {string[]} prompt       - initial prompt tokens
@@ -59,109 +58,17 @@ export default class BackoffModel extends SuffixGram {
    * @param {number}   [opts.temp=1]         - sampling temperature
    * @param {number}   [opts.minLength=5]    - minimum tokens before stopping a sentence
    * @param {number}   [opts.maxLength=999]  - max tokens to generate per sentence before giving up
-   * @param {number}   [opts.maxAttempts=999]   - max attempts before giving up
+   * @param {number}   [opts.maxAttempts=999]   - max outer reseed attempts before giving up
+   * @param {number}   [opts.maxBacktracks=20000] - max inner backtrack steps per attempt
    * @param {boolean}  [opts.allowSpecial=false] - whether to allow special tokens in the output
    * @param {number}   [opts.maxLengthMatch=Infinity] - max length of sequence allowed to match training data
    * @param {boolean}  [opts.debug=false] - whether to log debug info during generation
    * @returns {string | string[]} string if count = 1, else array of sentences, length = numSentences
    */
   generateSentences(n, prompt, opts = {}) {
-
-    // resolve options and aliases, apply defaults
-    const numSentences = opts.numSentences ?? 2;
-    const perSentenceMax = opts.maxLength ?? BackoffModel.generationDefaults.maxLength;
-    const perSentenceMin = opts.minLength ?? BackoffModel.generationDefaults.minLength;
-    const maxAttempts = opts.maxAttempts ?? BackoffModel.generationDefaults.maxAttempts;
-    const endToken = this.endToken, startToken = this.startToken;
-    const dbug = opts.debug ? (...args) => console.log('[generateSentences]', ...args) : () => { };
-
-    // validate that the prompt exists in the corpus
-    const nonEmptyPrompt = prompt.filter(t => t && t.length > 0);
-    const validPrompt = nonEmptyPrompt.filter(t => t.trim().length > 0);
-    if (nonEmptyPrompt.length > 0 && validPrompt.length === 0) {
-      throw Error(`generate() failed: prompt contains only whitespace tokens`);
-    }
-
-    // helper to select a random sentence start if no prompt is provided
-    const randomStarter = () => {
-      if (validPrompt && validPrompt.length > 0) return [...validPrompt];
-      return [SuffixGram.RiTa.randomizer.pselectObj(this.suffixes.startIndexDist())];
-    };
-
-    // helper to extract sentences from a stream of tokens, splitting on endToken boundaries
-    const extractSentences = (allTokens) => {
-      let current = [];
-      const sentences = [];
-      for (const tok of allTokens) {
-        if (tok === endToken) {
-          if (current.length > 0) {
-            if (current.length > perSentenceMax || current.length < perSentenceMin) {
-              break; // sentence too short/long — retry
-            }
-            sentences.push(this.untokenize(current));
-          }
-          current = [];
-        } else if (tok !== startToken) {
-          current.push(tok);
-        }
-      }
-      return sentences;
-    }
-
-    // validate that the prompt, if provided, is valid and exists
-    if (validPrompt.length > 0) {
-      const dist = this.suffixes.pdist(validPrompt, { n });
-      if (!dist || Object.keys(dist).length === 0) {
-        throw Error(`generate() failed: prompt [${validPrompt.join(', ')}] not found in model`);
-      }
-      // verify that the prompt is a sentence start if generating only one sentence
-      if (numSentences === 1) {
-        const startDist = this.suffixes.startIndexDist();
-        if (!startDist[validPrompt[0]]) {
-          throw Error(`generate() failed: prompt token '${validPrompt[0]}' is not a sentence start`);
-        }
-      }
-    }
-
-    // LOOP: try to generate `numSentences` sentences up to `maxAttempts` times
-    let attempts = 0;
-    while (++attempts <= maxAttempts) {
-
-      // Fresh counter each attempt — stops the stream after `numSentences` end tokens
-      let endsSeen = 0;
-
-      // options passed to streamTokens
-      const options = {
-        ...opts,
-        allowSpecial: true,
-        maxLength: perSentenceMax * numSentences,
-        generateUntil: (t) => t === endToken && ++endsSeen >= numSentences,
-      };
-
-      // Start with either the provided prompt or a random sentence start from the model
-      const initialPrompt = randomStarter();
-
-      // Stream tokens until we hit the end condition (`numSentences` end tokens)
-      const allTokens = [...initialPrompt]; // streamTokens doesn't yield the prompt itself
-      for (const token of this.streamTokens(n, initialPrompt, options)) {
-        allTokens.push(token);
-      }
-
-      // Split token stream on endToken boundaries into individual sentences
-      const sentences = extractSentences(allTokens);
-
-      // If we successfully generated the requested number of sentences, return them
-      if (sentences.length === numSentences) return sentences;
-
-      // RETRY :
-      // Stream hit `options.maxLength` before producing enough sentences
-      // OR we generated fewer than `numSentences` sentences 
-      // OR a sentence was included that was too short/long 
-      // OR that matched training data (> maxLengthMatch) 
-    }
-
-    throw Error(`generateSentences() failed after ${maxAttempts} attempts`);
+    return this.backtrackingGenerate(n, prompt, opts);
   }
+
 
   /**
    * Return all valid generation paths sorted by normalised joint probability.
@@ -340,17 +247,182 @@ export default class BackoffModel extends SuffixGram {
 
   /////////////////////// PRIVATE //////////////////////////
 
+  /**
+   * Per-position backtracking generator used in generateSentences(),
+   * which builds a single multi-sentence token buffer, retrying/backtracking locally
+   * at the position where a candidate is rejected (by minLength/maxLength/maxLengthMatch).
+   * @private
+   */
+  backtrackingGenerate(n, prompt, opts = {}) {
+
+    const numSentences = opts.numSentences ?? 2;
+    const maxBacktracks = opts.maxBacktracks ?? 9999;
+    const perMax = opts.maxLength ?? BackoffModel.generationDefaults.maxLength;
+    const perMin = opts.minLength ?? BackoffModel.generationDefaults.minLength;
+    const mlm = opts.maxLengthMatch ?? BackoffModel.generationDefaults.maxLengthMatch;
+    const maxAttempts = opts.maxAttempts ?? BackoffModel.generationDefaults.maxAttempts;
+    
+    const temp = opts.temp, endToken = this.endToken, startToken = this.startToken;
+    const isSpecial = token => token.startsWith('<') && token.endsWith('>');
+    const saOpts = { temp, n };
+
+    // validate that the prompt contains no whitespace-only tokens
+    const nonEmptyPrompt = (prompt || []).filter(t => t && t.length > 0);
+    const validPrompt = nonEmptyPrompt.filter(t => t.trim().length > 0);
+    if (nonEmptyPrompt.length > 0 && validPrompt.length === 0) {
+      throw Error(`prompt contains only whitespace tokens`);
+    }
+
+    // helper to select a random sentence start if none is provided
+    const randomStarter = () => {
+      if (validPrompt.length > 0) return [...validPrompt];
+      return [SuffixGram.RiTa.randomizer.pselectObj(this.suffixes.startIndexDist())];
+    };
+
+    // validate that the prompt, if provided, is valid and exists
+    if (validPrompt.length > 0) {
+      const dist = this.suffixes.pdist(validPrompt, { n });
+      if (!dist || Object.keys(dist).length === 0) {
+        throw Error(`generate() failed: prompt [${validPrompt.join(', ')}] not found in model`);
+      }
+      // verify that the prompt is a sentence start if generating only one sentence
+      if (numSentences === 1) {
+        const startDist = this.suffixes.startIndexDist();
+        if (!startDist[validPrompt[0]]) {
+          throw Error(`generate() failed: prompt token '${validPrompt[0]}' is not a sentence start`);
+        }
+      }
+    }
+
+    // extract sentences from the final context, splitting at each sentence boundary.
+    // the first sentence includes the prompt/seed tokens (indices before sentenceStarts[0]),
+    // which are excluded from tokensInSentence/minLength accounting
+    const splitIntoSentences = (context, sentenceStarts) => {
+      const sentences = [];
+      const bounds = [0, ...sentenceStarts.slice(1)];
+      for (let i = 0; i < bounds.length - 1; i++) {
+        const slice = context.slice(bounds[i], bounds[i + 1])
+          .filter(t => t !== startToken && t !== endToken);
+        sentences.push(this.untokenize(slice));
+      }
+      return sentences;
+    };
+
+    // weighted selection among the (already-filtered) candidates
+    const weightedSelect = (candidates) => {
+      let chosen = candidates[candidates.length - 1][0], weightSum = 0;
+      for (const [token, prob] of candidates) {
+        weightSum += prob;
+        if (Math.random() * weightSum < prob) chosen = token;
+      }
+      return chosen;
+    };
+
+    let attempts = 0;
+    while (++attempts <= maxAttempts) {
+
+      let context = [...randomStarter()];
+      const floor = context.length; // seed boundary — cannot backtrack before this
+      const choicePoints = []; // choicePoints[i] describes context[i]
+      // the first sentence's length count includes the prompt/seed tokens, later sentences start at 0
+      const sentenceStarts = [0];
+
+      let endsSeen = 0, backtracks = 0,  gaveUp = false;
+
+      const backtrack = () => {
+        if (context.length <= floor) return false;
+        const poppedIdx = context.length - 1;
+        context.pop();
+        const cp = choicePoints[poppedIdx];
+        if (cp && cp.isSentenceEnd) {
+          endsSeen--;
+          sentenceStarts.pop();
+        }
+        // keep choicePoints[poppedIdx].triedTokens so  popped token stays excluded
+        // if the position is recomputed — only clear isSentenceEnd flag
+        if (cp) cp.isSentenceEnd = false;
+        backtracks++;
+        return true;
+      };
+
+      while (endsSeen < numSentences) {
+
+        if (backtracks > maxBacktracks) { gaveUp = true; break; }
+
+        const pos = context.length;
+        const curStart = sentenceStarts[sentenceStarts.length - 1];
+        const tokensInSentence = pos - curStart;
+
+        // always use the full (n-1)-gram context
+        const query = context.slice(-(n - 1));
+        const dist = this.suffixes.pdist(query, saOpts);
+        const tried = (choicePoints[pos] && choicePoints[pos].triedTokens) || new Set();
+
+        if (!dist || Object.keys(dist).length === 0) {
+          // genuine "no path at all" deadend (should be very rare) 
+          if (!backtrack()) { gaveUp = true; break; }
+          continue;
+        }
+
+        const candidates = [];
+        for (const [token, prob] of Object.entries(dist)) {
+          if (tried.has(token)) continue;
+          if (token === endToken) {
+            if (tokensInSentence < perMin) continue; // too early to end
+          } else if (isFinite(mlm) && !isSpecial(token)) {
+            const nonSpecial = context.filter(t => !isSpecial(t));
+            const seq = [...nonSpecial.slice(-mlm), token];
+            if (seq.length > mlm && this.suffixes.hasPrefix(seq)) continue; // violates MLM
+          }
+          candidates.push([token, prob]);
+        }
+
+        if (candidates.length === 0) {
+          // every remaining candidate has been filtered out or already tried
+          if (!backtrack()) { gaveUp = true; break; }
+          continue;
+        }
+        const token = weightedSelect(candidates);
+
+        // record this position's state BEFORE deciding accept/reject, so a future
+        // backtrack to this position knows `token` was already tried
+        tried.add(token);
+        choicePoints[pos] = { triedTokens: tried, isSentenceEnd: false };
+
+        if (token === endToken) {
+          const sentLen = tokensInSentence;
+          if (sentLen < perMin || sentLen > perMax) {
+            // invalid length, do not advance context, mark tried & retry this position
+            continue;
+          }
+          context.push(token);
+          choicePoints[pos].isSentenceEnd = true;
+          endsSeen++;
+          sentenceStarts.push(context.length);
+          continue;
+        }
+
+        context.push(token);
+      }
+
+      if (!gaveUp && endsSeen === numSentences) {
+        return splitIntoSentences(context, sentenceStarts);
+      }
+      // else: fall through, reseed, try again (outer loop)
+    }
+
+    throw Error(`backoff failed after ${maxAttempts} attempts`);
+  }
+
   build(opts = {}) {
-    //if (opts.verbose) ts = Date.now();
+    if (opts.verbose) ts = Date.now();
     this.tokenCount = 0;
     if (this.tokens && this.tokens.length > 0) {
       this.suffixes = new SuffixArray(this.tokens, opts);
       this.tokenCount = this.tokens.length; // include start/end
       this.tokens = undefined; // free up memory
       this.ready = true;
-      // if (opts.verbose) {
-      //   console.log(`BackoffModel loaded ${this.size()} tokens in ${Date.now() - ts}ms`);
-      // }
+      if (opts.verbose) console.log(`loaded ${this.size()} tokens in ${Date.now() - ts}ms`);
     }
     return this;
   }
