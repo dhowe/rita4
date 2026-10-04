@@ -1,0 +1,231 @@
+{
+  "class": "RiMarkov",
+  "fields": [],
+  "statics": [
+    {
+      "name": "fromJSON",
+      "example": "rm = RiMarkov.fromJSON(jsonData);",
+      "description": "Creates a new model from one previously saved as JSON (JavaScript only)",
+      "syntax": "RiMarkov.fromJSON(jsonData);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "a JSON string containing the model"
+        }
+      ],
+      "platform": "JavaScript",
+      "returns": [
+        {
+          "type": "RiMarkov",
+          "desc": "a newly created RiMarkov object"
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "addText",
+      "example": "sample = \"One reason people lie is to achieve personal power.\";<br/>rm = new RiMarkov(3);<br/>rm.addText(sample);",
+      "description": "Loads text into the model, first splitting it into sentences (using RiTa.sentences(). If you wish to add an array of sentences directly, use <a href='../addSentences'>addSentences()</a> instead.",
+      "syntax": "addText(text);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "raw text to be split into sentences and added to the model"
+        }
+      ],
+      "returns": [
+        {
+          "type": "RiMarkov",
+          "desc": "this RiMarkov"
+        }
+      ],
+      "related": "<a href='../addSentences'>addSentences()</a>, <a href='../addTokens'>addTokens()</a>"
+    },
+    {
+      "name": "completions",
+      "example": "result = rm.completions([ &#34;the&#34;, &#34;red&#34;]);<br/>&nbsp;<br/>result = rm.completions([ &#34;the&#34; ], [ &#34;red&#34;, &#34;ball&#34; ]);",
+      "syntax": "completions(preArray);<br/>completions(preArray, postArray);<br/>completions(preArray, postArray, opts);",
+      "description": "If only one array parameter is provided, this function returns all possible next words, ordered by probability, for the given array.<br/>&nbsp;<br/>If two arrays are provided, it returns an unordered array of possible words <i>w</i> that complete the n-gram consisting of: pre[0]...pre[k], <i>w</i>, post[k+1]...post[n].<br/><br/><pre>result = rm.completions([ &#34;the&#34; ], [ &#34;red&#34;, &#34;ball&#34; ]);</pre>The line above will return all the single words that occur between 'the' and 'red ball' in the current model (assuming n > 3), eg [ 'round', 'big', 'bouncy' ]).<br/><br/>Note: For this operation to be valid, (pre.length + post.length) must be less than the model's n-factor, otherwise an error will be thrown.",
+      "parameters": [
+        {
+          "type": "String[]",
+          "desc": "pre"
+        },
+        {
+          "type": "String[]",
+          "desc": "post (optional)"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional)<br><br>{boolean} <b>opts.allowSpecial:</b><br>if true, include internal start/end tokens in the results (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the list of possible next tokens"
+        }
+      ]
+    },
+    {
+      "name": "generate",
+      "example": "rm = new RiMarkov(3);<br/>rm.addText(sentences);<br/><br/>// Generate one sentence<br/>sent = rm.generate();<br/><br/>// Generate 5 sentences<br/>sents = rm.generate({ numSentences: 5 });<br/><br/>// Generate from a prompt<br/>sent = rm.generate([\"the\", \"cat\"]);",
+      "description": "Generates one or more sentences from the model.<br/><br/>Supports several call signatures:<br/><pre>generate(n, prompt, opts) — explicit n-gram order, prompt array, options<br/>generate(n, opts)         — n-gram order and options<br/>generate(prompt, opts)    — prompt array and options<br/>generate(opts)            — all parameters in options object</pre><br/>Note: when <b>numSentences</b> &gt; 1, multiple sentences <em>follow the model across sentence boundaries</em> — they are not independent generations.",
+      "syntax": "generate();<br/>generate(opts);<br/>generate(prompt, opts);<br/>generate(n, prompt, opts);",
+      "parameters": [
+        {
+          "type": "int",
+          "desc": "n-gram order (optional, uses constructor value if omitted)"
+        },
+        {
+          "type": "String[]",
+          "desc": "prompt — initial tokens to seed the generation (optional)"
+        },
+        {
+          "type": "Object",
+          "desc": "options (all optional):<br><br>{int} <b>options.n:</b><br>n-gram order (alternative to positional arg)<br><br>{String[]} <b>options.prompt:</b><br>prompt tokens (alternative to positional arg)<br><br>{int} <b>options.numSentences:</b><br>number of sentences to generate, default=1<br><br>{int} <b>options.minLength / options.minTokens:</b><br>minimum token count before a stop condition is honoured, default=5<br><br>{int} <b>options.maxLength / options.maxTokens:</b><br>hard cap on tokens generated, default=999<br><br>{number} <b>options.temp / options.temperature:</b><br>sampling temperature — higher values increase randomness, lower values favour more frequent tokens, default=1<br><br>{int} <b>options.maxLengthMatch / options.mlm:</b><br>maximum run of consecutive tokens that may appear verbatim in the training data, default=∞<br><br>{String|Function} <b>options.generateUntil:</b><br>a stop token (string) or predicate <code>(token, tokensSoFar) =&gt; boolean</code> that ends generation early<br><br>{boolean} <b>options.allowSpecial:</b><br>if true, include internal start/end tokens in the results (default=false)<br><br>{int} <b>options.maxAttempts:</b><br>maximum number of attempts to generate a valid sentence before giving up, default=999<br><br>{boolean} <b>options.debug / options.dbug:</b><br>if true, print debug info to console (default=false)<br><br>{boolean} <b>options.forceOriginal:</b><br>if true, only generate sequences that appear in the training data<br><br>{int} <b>options.topK:</b><br>limit sampling to top-K most probable tokens, default=20<br><br>{int} <b>options.depth:</b><br>maximum depth for generation paths search, default=50<br><br>{boolean} <b>options.sortByProb:</b><br>if true, sort multi-sentence results by probability<br><br>{boolean} <b>options.strictBackoff:</b><br>if true, enforce strict backoff behavior"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String or String[]",
+          "desc": "a single string when numSentences=1 (default), otherwise an array of strings"
+        }
+      ]
+    },
+    {
+      "name": "probabilities",
+      "example": "rm = new RiMarkov(3);<br/>rm.addText(theText);<br/><br/>// next-word distribution after 'the cat'<br/>dist = rm.probabilities([\"the\", \"cat\"]);<br/>// -> { sat: 0.5, jumped: 0.3, meowed: 0.2 }<br/><br/>// with temperature<br/>dist = rm.probabilities([\"the\"], { temp: 1.5 });",
+      "description": "Returns the full set of possible next tokens as an object, given an array of tokens as context.<br/><br/>If no tokens are provided, returns the distribution following the implicit start token.<br/>Special start/end tokens are excluded from the result unless <b>options.allowSpecial</b> is set.",
+      "syntax": "probabilities();<br/>probabilities(tokens);<br/>probabilities(tokens, opts);",
+      "parameters": [
+        {
+          "type": "String[]",
+          "desc": "context tokens (optional — defaults to start-of-sequence)"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional)<br><br>{number} <b>options.temp:</b><br>sampling temperature (default=0, i.e. raw frequencies)<br><br>{boolean} <b>options.allowSpecial:</b><br>if true, include internal start/end tokens in the result (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Object",
+          "desc": "an object mapping possible next tokens to their probabilities, or an empty object if no continuations exist"
+        }
+      ]
+    },
+    {
+      "name": "size",
+      "example": "rm = new RiMarkov(3);<br/>rm.addText(sentences); if (rm.size() > 10) { ... }",
+      "description": "Returns the number of tokens currently in the model",
+      "syntax": "rm.size();",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "toString",
+      "example": "rm = new RiMarkov(3);<br/>rm.addText(sentences);<br/>s = rm.toString();",
+      "description": "Returns a formatted version of this model",
+      "syntax": "rm.toString();",
+      "parameters": [
+        {
+          "type": "Object",
+          "desc": "options (optional) for formatting"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the object as a String"
+        }
+      ]
+    },
+    {
+      "name": "toJSON",
+      "example": "rm = new RiMarkov(3);<br/>rm.addText(sentences);<br/>json = rm.toJSON();",
+      "description": "Converts the model to a JSON-formatted string  (JavaScript only)",
+      "syntax": "toJSON();",
+      "parameters": [],
+      "platform": "JavaScript",
+      "returns": [
+        {
+          "type": "String",
+          "desc": "JSON representation"
+        }
+      ]
+    },
+    {
+      "name": "stream",
+      "example": "rm = new RiMarkov(3);<br/>rm.addText(sentences);<br/><br/>for (const token of rm.stream([\"the\"])) {<br/>  process.stdout.write(token + ' ');<br/>}",
+      "description": "A generator that streams tokens one-by-one from the model as they are sampled. Useful for real-time or incremental output.<br/><br/>Supports the same polymorphic call signatures as <a href='../generate'>generate()</a>.",
+      "syntax": "stream();<br/>stream(prompt);<br/>stream(n, prompt, opts);",
+      "parameters": [
+        {
+          "type": "int",
+          "desc": "n-gram order (optional)"
+        },
+        {
+          "type": "String[]",
+          "desc": "prompt — initial tokens to seed the stream (optional)"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional) — same as <a href='../generate'>generate()</a>, with the addition of:<br><br>{String|Function} <b>opts.generateUntil:</b><br>stop token or predicate <code>(token, tokensSoFar) => boolean</code>, defaults to model's endToken"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Iterator&lt;String&gt;",
+          "desc": "a generator that yields one token at a time"
+        }
+      ],
+      "platform": "JavaScript",
+      "related": "<a href='../generate'>generate()</a>"
+    },
+    {
+      "name": "addSentences",
+      "example": "rm = new RiMarkov(3);<br/>rm.addSentences([\"The cat sat.\", \"The dog ran.\"]);",
+      "description": "Loads an array of pre-split sentences into the model. Each string in the array is treated as an individual sentence (no further splitting is applied). This is the lower-level counterpart to <a href='../addText'>addText()</a>.",
+      "syntax": "addSentences(sentences);",
+      "parameters": [
+        {
+          "type": "String[]",
+          "desc": "an array of sentences to add"
+        }
+      ],
+      "returns": [
+        {
+          "type": "RiMarkov",
+          "desc": "this RiMarkov"
+        }
+      ],
+      "related": "<a href='../addText'>addText()</a>, <a href='../addTokens'>addTokens()</a>"
+    },
+    {
+      "name": "addTokens",
+      "example": "rm = new RiMarkov(3);<br/>rm.addTokens([\"the\", \"cat\", \"sat\", \".\", \"the\", \"dog\", \"ran\", \".\"]);",
+      "description": "Loads a pre-tokenized array of tokens directly into the model, bypassing sentence splitting and tokenization entirely.",
+      "syntax": "addTokens(tokens);",
+      "parameters": [
+        {
+          "type": "String[]",
+          "desc": "an array of tokens to add"
+        }
+      ],
+      "returns": [
+        {
+          "type": "RiMarkov",
+          "desc": "this RiMarkov"
+        }
+      ],
+      "related": "<a href='../addText'>addText()</a>, <a href='../addSentences'>addSentences()</a>"
+    }
+  ]
+}

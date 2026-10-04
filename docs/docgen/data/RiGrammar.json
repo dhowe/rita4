@@ -1,0 +1,141 @@
+{
+  "class": "RiGrammar",
+  "fields": [],
+  "statics": [
+    {
+      "name": "fromJSON",
+      "example": "rg = RiGrammar.fromJSON(grammarRules);",
+      "description": "Creates a new grammar object from a JSON string",
+      "syntax": "RiGrammar.fromJSON(grammarRules);<br>RiGrammar.fromJSON(grammarRules, context);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "a JSON representation of the grammar"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "the context for any referenced variables or functions (optional)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "RiGrammar",
+          "desc": "this RiGrammar object"
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "addRule",
+      "example": "rg = new RiGrammar();<br/>rg.addRule(\"start\", \"animal\");<br/>rg.addRule(\"animal\", \"cat | dog | chicken\");<br><br><br>// To add weights, specify them inline with brackets<br><br>rg.addRule(\"animal\", \"cat [4] | dog | chicken\");",
+      "description": "Adds a rule to the existing grammar, replacing any existing rule with the same name.",
+      "syntax": "addRule(name, definition);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the rule name"
+        },
+        {
+          "type": "String or String[]",
+          "desc": "the rule definition"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Object",
+          "desc": "this RiGrammar object"
+        }
+      ]
+    },
+    {
+      "name": "expand",
+      "example": "rg = RiTa.grammar(rules); <br/>result = rg.expand();<br><br>rg = RiTa.grammar(rules); <br/>result = rg.expand(ruleName);<br><br>rg = RiTa.grammar(rules, context); <br/>result = rg.expand(ruleName);",
+      "description": "Expands a grammar from the supplied rule. If no rule is provided the &#36;start and &#60;start&#62; symbols will be checked respectively. <br/><br/>If a context is needed, it should be passed in when the grammar is created (see 3rd example below).",
+      "syntax": "expand();<br/>expand(ruleName);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the rule name to be expanded (optional)"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "(optional) options <br><br>{boolean} options.trace:<br>if true, output verbose log to console for debugging (default=false)<br><br>{boolean} options.onepass:<br>if true, run only one pass through the parser (default=false)<br><br>{boolean} options.v2Compatible: <br>if true, use RiScript v2-compatible syntax (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the result of the expansion (or an error if the rule is not found)"
+        }
+      ]
+    },
+    {
+      "name": "removeRule",
+      "example": "rg = new RiGrammar(); <br>rg.addRule(\"pet\", \"dog | hawk | crow\", 1); <br>rg.removeRule(\"pet\");",
+      "description": "Deletes the named rule from the grammar",
+      "syntax": "removeRule(name);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the rule name"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Object",
+          "desc": "this RiGrammar object"
+        }
+      ]
+    },
+    {
+      "name": "setRules",
+      "example": "rg = new RiGrammar(); <br>rg.setRules(rules);",
+      "description": "Loads a grammar from an object (or Map in Java).",
+      "syntax": "rg.setRules(grammarRules);",
+      "parameters": [
+        {
+          "type": "Object or JSON string",
+          "desc": "a representation of the grammar"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Object",
+          "desc": "this RiGrammar object"
+        }
+      ]
+    },
+    {
+      "name": "toString",
+      "example": "rm = new RiGrammar(rules);<br/>s = rm.toString();",
+      "description": "Returns a formatted version of this grammar",
+      "syntax": "rg.toString();",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the object as a String"
+        }
+      ]
+    },
+    {
+      "name": "toJSON",
+      "example": "rg = new RiGrammar(rules);<br/>json = rg.toJSON();",
+      "description": "Return a formatted version of this grammar.",
+      "syntax": "rg.toJSON();",
+      "parameters": [
+        {
+          "type": "boolean",
+          "desc": "prettify the output or not (optional, default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the grammar as a json string"
+        }
+      ]
+    }
+  ]
+}

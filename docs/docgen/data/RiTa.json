@@ -1,0 +1,1381 @@
+{
+  "class": "rita.RiTa",
+  "fields": [
+    {
+      "name": "VERSION",
+      "example": "versionNumber = RiTa.VERSION; ",
+      "variable": true,
+      "description": "the current RiTa version ",
+      "syntax": "RiTa.VERSION",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String",
+          "desc": ""
+        }
+      ]
+    },
+    {
+      "name": "SILENT",
+      "example": "RiTa.SILENT = false;",
+      "variable": true,
+      "description": "If true, silence all info/warnings from RiTa",
+      "syntax": "RiTa.SILENT",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the current silent setting"
+        }
+      ]
+    },
+    {
+      "name": "SILENCE_LTS",
+      "example": "RiTa.SILENCE_LTS = false;",
+      "variable": true,
+      "description": "If true, silence warnings for words not in lexicon",
+      "syntax": "RiTa.SILENCE_LTS",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the current lexicon silent setting"
+        }
+      ]
+    },
+    {
+      "name": "SPLIT_CONTRACTIONS",
+      "example": "RiTa.SPLIT_CONTRACTIONS = true; // globally split contractions",
+      "variable": true,
+      "description": "Global flag to control whether contractions (e.g. \"I'd\" or \"she'll\") are split into multiple tokens by default. Default=false.",
+      "syntax": "RiTa.SPLIT_CONTRACTIONS",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "the current global split-contractions setting"
+        }
+      ]
+    },
+    {
+      "name": "STOP_WORDS",
+      "example": "RiTa.STOP_WORDS; // the default list<br/>RiTa.STOP_WORDS = [\"the\",\"a\"]; // replace with custom list",
+      "variable": true,
+      "description": "Array of common stop words used by RiTa.isStopWord(), RiTa.tokens(), and RiTa.concordance(). Can be replaced with a custom array of lowercase words.",
+      "syntax": "RiTa.STOP_WORDS",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the current list of stop words"
+        }
+      ]
+    },
+    {
+      "name": "PHONES",
+      "example": "RiTa.PHONES; // -> ['aa', 'ae', 'ah', ...]",
+      "variable": true,
+      "description": "Array of all phoneme labels used in RiTa's ARPAbet-based phoneme set.",
+      "syntax": "RiTa.PHONES",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "all phoneme labels"
+        }
+      ]
+    },
+    {
+      "name": "FIRST",
+      "example": "RiTa.conjugate(\"walk\", { person: RiTa.FIRST }); // -> 'walk'",
+      "variable": true,
+      "description": "Constant for first person, used as an option value with RiTa.conjugate(). Value: 1.",
+      "syntax": "RiTa.FIRST",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "1"
+        }
+      ],
+      "related": "RiTa.SECOND, RiTa.THIRD, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "SECOND",
+      "example": "RiTa.conjugate(\"walk\", { person: RiTa.SECOND }); // -> 'walk'",
+      "variable": true,
+      "description": "Constant for second person, used as an option value with RiTa.conjugate(). Value: 2.",
+      "syntax": "RiTa.SECOND",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "2"
+        }
+      ],
+      "related": "RiTa.FIRST, RiTa.THIRD, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "THIRD",
+      "example": "RiTa.conjugate(\"walk\", { person: RiTa.THIRD }); // -> 'walks'",
+      "variable": true,
+      "description": "Constant for third person, used as an option value with RiTa.conjugate(). Value: 3.",
+      "syntax": "RiTa.THIRD",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "3"
+        }
+      ],
+      "related": "RiTa.FIRST, RiTa.SECOND, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "PAST",
+      "example": "RiTa.conjugate(\"walk\", { tense: RiTa.PAST }); // -> 'walked'",
+      "variable": true,
+      "description": "Constant for past tense, used as an option value with RiTa.conjugate(). Value: 4.",
+      "syntax": "RiTa.PAST",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "4"
+        }
+      ],
+      "related": "RiTa.PRESENT, RiTa.FUTURE, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "PRESENT",
+      "example": "RiTa.conjugate(\"walk\", { tense: RiTa.PRESENT }); // -> 'walks'",
+      "variable": true,
+      "description": "Constant for present tense, used as an option value with RiTa.conjugate(). Value: 5.",
+      "syntax": "RiTa.PRESENT",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "5"
+        }
+      ],
+      "related": "RiTa.PAST, RiTa.FUTURE, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "FUTURE",
+      "example": "RiTa.conjugate(\"walk\", { tense: RiTa.FUTURE }); // -> 'will walk'",
+      "variable": true,
+      "description": "Constant for future tense, used as an option value with RiTa.conjugate(). Value: 6.",
+      "syntax": "RiTa.FUTURE",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "6"
+        }
+      ],
+      "related": "RiTa.PAST, RiTa.PRESENT, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "SINGULAR",
+      "example": "RiTa.conjugate(\"walk\", { number: RiTa.SINGULAR }); // -> 'walks'",
+      "variable": true,
+      "description": "Constant for singular number, used as an option value with RiTa.conjugate(). Value: 7.",
+      "syntax": "RiTa.SINGULAR",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "7"
+        }
+      ],
+      "related": "RiTa.PLURAL, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "PLURAL",
+      "example": "RiTa.conjugate(\"walk\", { number: RiTa.PLURAL }); // -> 'walk'",
+      "variable": true,
+      "description": "Constant for plural number, used as an option value with RiTa.conjugate(). Value: 8.",
+      "syntax": "RiTa.PLURAL",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "8"
+        }
+      ],
+      "related": "RiTa.SINGULAR, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "INFINITIVE",
+      "example": "RiTa.conjugate(\"walk\", { form: RiTa.INFINITIVE }); // -> 'to walk'",
+      "variable": true,
+      "description": "Constant for the infinitive form, used as an option value with RiTa.conjugate(). Value: 1.",
+      "syntax": "RiTa.INFINITIVE",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "1"
+        }
+      ],
+      "related": "RiTa.GERUND, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "GERUND",
+      "example": "RiTa.conjugate(\"walk\", { form: RiTa.GERUND }); // -> 'walking'",
+      "variable": true,
+      "description": "Constant for the gerund form, used as an option value with RiTa.conjugate(). Value: 2.",
+      "syntax": "RiTa.GERUND",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "2"
+        }
+      ],
+      "related": "RiTa.INFINITIVE, <a href='../conjugate'>RiTa.conjugate()</a>"
+    },
+    {
+      "name": "NORMAL",
+      "example": "RiTa.conjugate(\"walk\", { form: RiTa.NORMAL }); // -> 'walk'",
+      "variable": true,
+      "description": "Constant for normal form, used as an option value with RiTa.conjugate(). Value: 9.",
+      "syntax": "RiTa.NORMAL",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "9"
+        }
+      ],
+      "related": "RiTa.INFINITIVE, RiTa.GERUND, <a href='../conjugate'>RiTa.conjugate()</a>"
+    }
+  ],
+  "statics": [
+    {
+      "name": "grammar",
+      "example": "rg = RiTa.grammar(rulesObject);<br>result = rg.expand();<br><br>rg = RiTa.grammar();<br>rg.addRule(\"start\", \"[ cat | dog | fish ]\");<br>let result = rg.expand();",
+      "description": "Creates a new RiGrammar object: a probabilistic context-free grammar for text-generation. You may use any of the <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript</a> features in a grammar, including transforms, sequences, and assignments.<br><br><pre class=\"margin\">rg = RiTa.grammar(theRules);<br>result = rg.expand();</pre><br>RiTa grammars are JS objects (or valid <a href=\"https://json.org/\" target=\"new\">JSON</a> formatted strings, or Java Maps), as follows<br><br><pre class=\"margin\">{<br>  start: [ $rule1 | $rule2 | $rule3 ],<br><br>  rule2: [ terminal1 | terminal2 | $rule1 ],<br><br>   ...<br>}</pre><br> If you're not sure whether your grammar is valid JSON, check it at <a target=\"new\" href='https://jsonlint.com/'> jsonlint.com</a>.<br><br>Note: a RiGrammar object will assign (by default) equal weights to all choices in a rule. You can adjust the weights by adding 'multipliers' as described in the <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript</a> reference. For example, in the rule below 'terminal1' will be chosen twice as often as the two other choices.<p><pre class=\"margin\">rule2: [ terminal1 (2) | terminal2 | $rule1 ]</pre><br>",
+      "syntax": "// Initialize an empty RiGrammar object<br>rg = RiTa.grammar();<br><br>// Or specify a grammar in a JS object (or JSON string)<br>rg = RiTa.grammar(rules);<br><br>// Or optionally supply a context<br>rg = RiTa.grammar(rules, context);",
+      "parameters": [
+        {
+          "type": "Object",
+          "desc": "A JS object, a JSON string, or a Java Map representing the grammar rules (optional)"
+        },
+        {
+          "type": "Object",
+          "desc": "A context object (or Map in Java), optional"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "(optional) options <br><br>{boolean} <b>options.trace</b>:<br>if true, output verbose log to console for debugging (default=false)<br><br>{boolean} <b>options.onepass</b>:<br>if true, run only one pass through the parser (default=false)<br><br>{boolean} <b>options.v2Compatible</b>: <br>if true, use RiScript v2-compatible syntax (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "RiGrammar",
+          "desc": "a RiGrammar object"
+        }
+      ],
+      "related": "see the tutorial <a href=\"https://observablehq.com/@dhowe/tut-rita-grammars\">Generating with Grammars</a>"
+    },
+    {
+      "name": "markov",
+      "example": "txt = \"This is a two sentence example. This is the second one.\"<br><br>rm = RiTa.markov(3);<br>rm.addText(txt);<br>sentences = rm.generate(2);<br><br>",
+      "description": "Creates a new RiMarkov object with functions for text-generation, as well as a range of other probabilistic functions.<br><br>This object uses Markov chains (aka n-grams) with options to process words or arbitrary regular expressions",
+      "syntax": "// Constructs a RiMarkov object and set its n-factor.<br><br>RiTa.markov(nFactor);<br><br><br>// Create an object and specify one or more options<br><br>RiTa.markov(nFactor, optionsObject);<br><br>",
+      "parameters": [
+        {
+          "type": "int",
+          "desc": "n-factor - the length of each n-gram stored in the model"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "options for creating the model (optional)<br><br>{int} <b>options.maxLengthMatch:</b><br># of words allowed in result to match a sequence in the input, default=∞<br><br>{boolean} <b>options.disableInputChecks:</b><br>if true, allow result to be present in the input, default=false<br><br>{Function} <b>options.tokenize:</b><br>a custom tokenize function to use, default=RiTa.tokenize <br><br>{Function} <b>options.untokenize</b> [JS only]:<br>a custom tokenize function to use, default=RiTa.untokenize<br><br>{boolean} <b>options.trace:</b><br>if true, output debug log to console, default=false<br><br>{int} <b>options.maxAttempts:</b><br>max attempts before throwing a generation error, default=999<br><br>{String or String[]} <b>options.text:</b><br>text to be added to the model (same as via model.addText()<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "RiMarkov",
+          "desc": "a RiMarkov object"
+        }
+      ],
+      "related": "For more options/detail see the tutorial <a href=\"https://observablehq.com/@dhowe/tut-rita-ngrams\">Generating with Markov chains</a>"
+    },
+    {
+      "name": "isAbbrev",
+      "example": "RiTa.isAbbrev(\"Prof.\"); // returns -> true",
+      "description": "Returns true if 'input' is an abbreviation",
+      "syntax": "RiTa.isAbbrev(input);<br/>RiTa.isAbbrev(input, option);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "text input"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "the relevant option (optional)<br><br>{boolean} <b>options.caseSensitive</b>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if 'input' is an abbreviation"
+        }
+      ]
+    },
+    {
+      "name": "isQuestion",
+      "example": "RiTa.isQuestion(\"what is this\"); // returns -> true",
+      "description": "Returns true if sentence starts with a question word",
+      "syntax": "RiTa.isQuestion(sentence);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "sentence"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if 'sentence' starts with a question word"
+        }
+      ]
+    },
+    {
+      "name": "isPunct",
+      "example": "isPunct(\"?\"); // returns -> true",
+      "description": "Returns true if every character of 'text' is a punctuation character",
+      "syntax": "RiTa.isPunct(text);",
+      "parameters": [
+        {
+          "type": "String or char",
+          "desc": "text input"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true or false"
+        }
+      ]
+    },
+    {
+      "name": "analyze",
+      "example": "result = RiTa.analyze(theText);",
+      "description": "Computes a set of features for the object, including phonemes, syllables, stresses, and part-of-speech",
+      "syntax": "RiTa.analyze(string);<br>RiTa.analyze(string, options);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the text to analyze"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "options (optional)<br><br>{boolean} <b>options.simple:</b><br> use simple tags or not, default=false<br><br>{boolean} <b>options.silent</b>:<br> if true, will not output logs to console when running (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "keys are [ phones, stresses, syllables, pos, tokens] "
+        }
+      ],
+      "related": "<a href=\"../phones/\">RiTa.phones()</a>, <a href=\"../pos/\">RiTa.pos()</a>",
+      "note": ""
+    },
+    {
+      "name": "randomSeed",
+      "example": "seed = 345345;<br/>RiTa.randomSeed(seed);",
+      "description": "Sets the seed for RiTa's random number generator in order to control the sequences of random generations (useful for testing code containing random elements)",
+      "syntax": "RiTa.randomSeed(num);",
+      "parameters": [
+        {
+          "type": "int",
+          "desc": "numElements"
+        }
+      ],
+      "returns": [],
+      "related": "<a href='../randomWord'>RiTa.randomWord()</a>, <a href='../randomOrdering'>RiTa.randomOrdering()</a>"
+    },
+    {
+      "name": "randomOrdering",
+      "example": "array = RiTa.randomOrdering(5);",
+      "description": "Returns a randomly ordered array of unique integers from 0 to the argument supplied.<br>The JavaScript version also accepts an array to be re-ordered as the sole parameter",
+      "syntax": "RiTa.randomOrdering(numElements);<br>RiTa.randomOrdering(array); // JS only",
+      "parameters": [
+        {
+          "type": "int",
+          "desc": "numElements"
+        }
+      ],
+      "returns": [
+        {
+          "type": "int[]",
+          "desc": "unique integers from 0 to numElements-1 <br>(or the reordered array when supplied as a parameter)"
+        }
+      ]
+    },
+    {
+      "name": "sentences",
+      "example": "RiTa.sentences(\"The boy went fishing.\", he said. Then he went away.\");",
+      "description": "Splits 'text' into sentences (according to Penn Treebank conventions)",
+      "syntax": "RiTa.sentences(text);<br/>RiTa.sentences(text, regex);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the text to be split"
+        },
+        {
+          "type": "String or Regex (JS), String or Pattern (Java)",
+          "desc": "regex (optional) the pattern to be used for word tokenization"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "an array of sentences"
+        }
+      ]
+    },
+    {
+      "name": "addTransform",
+      "example": "RiTa.addTransform(\"uc\", (s) => s.toUpperCase());<br/>RiTa.evaluate(\"[This].uc() is an acronym.\");",
+      "description": "Registers a new <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript</a> transform function that may then be used in all RiScript evaluations (including within Grammars)",
+      "syntax": "RiTa.addTransform(name, function);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the input"
+        },
+        {
+          "type": "Function",
+          "desc": "the function to call, which should accept and return a string"
+        }
+      ],
+      "returns": [],
+      "related": "See <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript documentation</a> "
+    },
+    {
+      "name": "evaluate",
+      "example": "RiTa.evaluate(\"He was [happy | sad | indifferent]\");<br/>RiTa.evaluate(\"He was [happy | sad | &#36;emo]\", context);",
+      "description": "Parses and executes a <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript</a> string",
+      "syntax": "RiTa.evaluate(string);<br/>RiTa.evaluate(string, context);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the input"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "the context for any referenced variables or functions (optional)"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "(optional) options <br><br>{boolean} <b>options.trace</b>:<br>if true, output verbose log to console for debugging (default=false)<br><br>{boolean} <b>options.onepass</b>:<br>if true, run only one pass through engine(default=false)<br><br>{boolean} <b>options.v2Compatible</b>: <br>if true, use RiScript v2-compatible syntax  (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the result of the evaluation"
+        }
+      ],
+      "related": "See <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript documentation</a>"
+    },
+    {
+      "name": "tokens",
+      "example": "<br/>sentence = \"A small one is like a big one.\";<br/>tokens = RiTa.tokens(sentence); <br/><br/>-> <em> [ 'a', 'small', 'one', 'is', 'like', 'big' ]</em><br/><br/><br/>sentence = \"One had escaped, she'd thought.\"; <br/>tokens = RiTa.tokens(sentence, { splitContractions: true });<br/><br/>-> <em>[ 'one', 'had', 'escaped', 'she', 'had', 'thought' ]</em><br/><br/>",
+      "description": "Return an array containing all unique alphabetical words (tokens) in the text.<br/>",
+      "syntax": "RiTa.tokens(text);<br/>RiTa.tokens(text, options);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the input"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional), the relevant options for the function:<br/><br/>{String or Regex} options.regex:<br>customized regex for the tokenization, <br><br>{boolean} options.splitContractions: <br/>Convert contractions (e.g., \"I'd\" or \"she'll\") into multiple individual tokens<br/><br/>{boolean} options.includePunct: <br/>Include punctuation tokens in the output<br/><br/>{boolean} options.caseSensitive:<br/>Treat differently cased strings as separate tokens <br/><br/>{boolean} options.ignoreStopWords: <br/>Ignore words like 'the', 'and', 'a', 'of', etc, as specified in RiTa.STOP_WORDS<br/><br/>{boolean} options.sort:<br/>Return the results in sorted order<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the set of unique alphabetical tokens in the text"
+        }
+      ],
+      "related": "<a href='../tokenize'>RiTa.tokenize()</a><br>RiTa.SPLIT_CONTRACTIONS<br>boolean to globally control the splitting of contractions (e.g. splitting \"I'd\" or \"she'll\") into multiple individual tokens), default=false."
+    },
+    {
+      "name": "tokenize",
+      "example": "<br/>sentence = \"The doctors treated dogs.\";<br/>words = RiTa.tokenize(sentence);<br/>words = RiTa.tokenize(sentence, { regex: \"\\\\\\\\s\" });<br/><br/>",
+      "description": "Tokenizes a string (into words) according to the Penn Treebank conventions.<br/>",
+      "syntax": "RiTa.tokenize(text);<br/>RiTa.tokenize(text, options);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the input"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional) the relevant options for the function:<br/><br/>{boolean} options.splitContractions: <br/>Convert contractions (e.g., \"I'd\" or \"she'll\") into multiple individual tokens<br/><br/>{String or Regex} options.regex: <br>Customized regex for the tokenization<br/><br/>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "Array in which each element is a single token (generally a word or single punctuation character)"
+        }
+      ],
+      "related": "<a href='../tokens'>RiTa.tokens()</a><br><a href='../untokenize'>RiTa.untokenize()</a><br>RiTa.SPLIT_CONTRACTIONS<br>boolean to globally control the splitting of contractions (e.g. splitting \"I'd\" or \"she'll\") into multiple individual tokens), default=false."
+    },
+    {
+      "name": "untokenize",
+      "example": "<br/>  words = [ \"The\", \"doctors\", \"treated\", \"dogs\", \".\" ];<br/>  sentence = RiTa.untokenize(words);<br/><br/>",
+      "description": "Joins an array (of words and punctuation) into a sentence, according to the Penn Treebank conventions. The inverse of RiTa.tokenize().<br/>",
+      "syntax": "  RiTa.untokenize(arrayOfWords);<br/>  RiTa.untokenize(arrayOfWords, delimiter);",
+      "parameters": [
+        {
+          "type": "String[]",
+          "desc": "the input, an array of words (tokens) and punctuation"
+        },
+        {
+          "type": "String",
+          "desc": "delimiter to use (optional, default=\" \" [a space])"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "String containing all elements as a sentence"
+        }
+      ],
+      "related": "<a href='../tokenize'>RiTa.tokenize()</a>"
+    },
+    {
+      "name": "phones",
+      "example": "<br/>RiTa.phones(\"apple\"); // returns -> ae-p-ah-l <br/><br/>RiTa.phones(\"two apples\"); // returns -> t-uw ae-p-ah-l-z <br/><br/>",
+      "description": "Returns a string containing all <a target=_new href='../../phones.html'>Penn phonemes</a> for the input text",
+      "syntax": "RiTa.phones(wordStr);<br>RiTa.phones(wordStr, options);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "text to analyze"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional), please see <a href=\"../analyze\">analyze()</a> for more details."
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "e.g., 'ae-n  eh-l-ax-f-ax-n-t  ih-z  ey  m-ae-m-ax-l'<br/>(for 'An elephant is a mammal')"
+        }
+      ],
+      "related": "<a href=\"../analyze/\">RiTa.analyze()</a><br>RiTa.PHONES: Array of all phonemes used",
+      "note": ""
+    },
+    {
+      "name": "pos",
+      "example": "<br/>RiTa.pos(\"I am a cat.\"); <br/>// returns -> [ \"prp\", \"vbp\", \"dt\", \"nn\", \".\" ]<br/><br/>",
+      "description": "Uses the default PosTagger to tag the input with tags from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]",
+      "syntax": "RiTa.pos(word);<br/>RiTa.pos(word, boolean);<br>RiTa.pos(word, options);",
+      "parameters": [
+        {
+          "type": "String or String[]",
+          "desc": "the text to be tagged"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "(optional) options<br><br>{boolean} <b>options.simple</b>:<br>use simple tags or not (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "Array of part-of-speech tags"
+        }
+      ],
+      "related": "<a href=\"../analyze/\">RiTa.analyze()</a>",
+      "note": ""
+    },
+    {
+      "name": "posInline",
+      "example": "<br/>sentence = \"The doctors treated dogs\";<br/>pos = RiTa.posInline(sentence);<br/><br/>tokenArray = RiTa.tokenize(sentence);<br/>pos = RiTa.posInline(tokenArray);<br/><br/>",
+      "description": "Takes an string returns a combined string of the form:<p><pre>'The/dt doctor/nn treated/vbd dogs/nns'</pre> using lowercased tags from the <a href='../../postags.html'>Penn tag set</a>",
+      "syntax": "RiTa.posInline(word);<br>RiTa.posInline(word, simpleTags);<br>RiTa.posInline(word, option);",
+      "parameters": [
+        {
+          "type": "String or String[]",
+          "desc": "the text(or text array) to tag"
+        },
+        {
+          "type": "boolean",
+          "desc": "use simple tags or not (optional, default=false)"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "(optional) options<br><br>{boolean} <b>options.simple</b>:<br>use simple tags or not, default=false"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "a combined string of words and pos tags"
+        }
+      ]
+    },
+    {
+      "name": "stresses",
+      "example": "RiTa.stresses(\"apple\"); // returns -> 1/0",
+      "description": "Analyzes the input and returns a new string containing the stresses for each syllable of the input text ",
+      "syntax": "RiTa.stresses(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "text to analyze"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "(optional) options, please see <a href=\"../analyze\">analyze()</a> for details"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "e.g., '1/0/1', with 1's meaning 'stressed', and 0's meaning 'unstressed', "
+        }
+      ]
+    },
+    {
+      "name": "syllables",
+      "example": "RiTa.syllables(\"apple\"); // returns -> ae/p-ah-l",
+      "description": "Analyzes the input and returns a string containing the phonemes for each syllable of each word of the input text,  delimited by dashes (phonemes) and spaces (words) ",
+      "syntax": "RiTa.syllables(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "text to analyze"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "(optional) options, please see <a href=\"../analyze\">analyze()</a> for details"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "e.g., 'dh-ax d-ao-g r-ae-n f-ae-s-t' for the 4 syllables of the phrase 'The dog ran fast'"
+        }
+      ],
+      "related": "<a href=\"../analyze/\">RiTa.analyze()</a>",
+      "note": ""
+    },
+    {
+      "name": "concordance",
+      "example": "<br/>// Java<br/><br/>opts = new HashMap();<br/>opts.put(\"ignoreCase\", false);<br/>opts.put(\"ignoreStopWords\", true);<br/><br/>result = RiTa.concordance(text, opts);<br/><br/><br/>// JavaScript<br/><br/>opts = {<br/> ignoreCase: false,<br/> ignoreStopWords: true<br/>};<br/><br/>result = RiTa.concordance(text, opts);<br/><br/>",
+      "description": "Creates a concordance, a list of words with their frequency of occurence, from the given text and options",
+      "syntax": "RiTa.concordance(text, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the text"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "options (optional) the relevant options for the KWIC model:<br/><br/>{boolean} <b>options.ignoreCase</b>:<br/>Ignore upper/lower case in the model <br/><br/>{boolean} <b>options.ignoreStopWords</b>: <br/>Ignore words like 'the', 'and', 'a', 'of', etc, as specified in RiTa.STOP_WORDS<br/><br/>{boolean} <b>options.ignorePunctuation</b>:<br/>Ignore punctuation tokens in the model<br/><br/>{String[]} <b>options.wordsToIgnore</b>:<br/>A set of words (alternative stop-words, for example) to ignore.<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "the concordance"
+        }
+      ],
+      "note": "See <a href=\"https://en.wikipedia.org/wiki/Concordance_%28publishing%29\">Concordance</a> on Wikipedia"
+    },
+    {
+      "name": "kwic",
+      "example": "<br/>options = {<br/> ignoreCase: false,<br/> ignoreStopWords: true<br/>};<br/><br/>RiTa.concordance(text, options);<br/><br/>lines = RiTa.kwic(word, numWords);<br/><br/>",
+      "description": "Return a list of occurrences of the key word in the Key-Word-In-Context (KWIC) model.<br><br>You may either call <a href=\"../concordance/\">RiTa.concordance()</a> first to build the model, or pass the source text directly via <b>options.text</b> or <b>options.words</b>.",
+      "syntax": "RiTa.kwic(word);<br>RiTa.kwic(word, numWords);<br>RiTa.kwic(word, options)",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the keyword of interest"
+        },
+        {
+          "type": "int",
+          "desc": "upper limit of words before/after the keyword (optional, default=6)"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "options for the model and the output (optional)<br><br>{String} <b>options.text</b>:<br>the text as the input of the KWIC model, you can set this option instead of calling RiTa.concordance() before RiTa.kwic(), if this option is set, it will overwrite the existing KWIC model<br><br>{String} <b>options.words</b>:<br>the words as the input of the KWIC model, you can set this option instead of calling RiTa.concordance() before RiTa.kwic(), if this option is set, it will overwrite the exist KWIC model<br><br>{int} <b>options.numWords</b>:<br>another way to set the numWords<br><br>{other} <br>if <b>options.text</b> or <b>options.words</b> is set, you can also set other concordance options for the model, please see <a href=\"../concordance/\">RiTa.concordance()</a> for detail"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "all the occurrences of the keyword in the model, each with no more than 'numWords' words of context on either side"
+        }
+      ],
+      "note": "See <a href=\"https://en.wikipedia.org/wiki/Key_Word_in_Context\">KeyWordInContext</a> and <a href=\"https://en.wikipedia.org/wiki/Concordance_%28publishing%29\">Concordance</a> on Wikipedia"
+    },
+    {
+      "name": "conjugate",
+      "example": "// JavaScript<br/><br/>opts = {<br/> tense: RiTa.PRESENT,<br/> number: RiTa.SINGULAR,<br/> person: RiTa.THIRD<br/>};<br/><br/>result = RiTa.conjugate('swim', opts);<br/><br/><br/>// Java<br/><br/>opts = new HashMap();<br/>opts.put(\"tense\", RiTa.PAST);<br/>opts.put(\"number\", RiTa.PLURAL);<br/>opts.put(\"person\", RiTa.FIRST);<br/><br/>result = RiTa.conjugate(\"swim\", opts);<br/><br/>",
+      "description": "Conjugates the 'verb' according to the specified options",
+      "syntax": "RiTa.conjugate(verb, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the root verb"
+        },
+        {
+          "type": "Object",
+          "desc": "object containing the relevant options (tense, number, person...) for the conjugator<br/><br/>{int} options.tense:<br>[RiTa.PAST, RiTa.PRESENT, or RiTa.FUTURE]<br/><br>{int} options.number:<br>[RiTa.SINGULAR or RiTa.PLURAL]<br/><br>{int} options.person:<br>[RiTa.FIRST, RiTa.SECOND or RiTa.THIRD]<br/><br/>{int} options.form:<br>[RiTa.INFINITIVE or RiTa.GERUND]<br><br>{boolean} options.passive: true or false<br><br>{boolean} options.progressive: true or false<br><br>{boolean} options.interrogative: true or false<br><br>{boolean} options.perfect: true or false"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the conjugated verb"
+        }
+      ],
+      "related": "RiTa.FIRST<br>RiTa.SECOND<br>RiTa.THIRD<br>RiTa.PAST<br>RiTa.PRESENT<br>RiTa.FUTURE<br>RiTa.SINGULAR<br>RiTa.PLURAL<br>RiTa.NORMAL<br>RiTa.INFINITIVE<br>RiTa.GERUND"
+    },
+    {
+      "name": "articlize",
+      "example": "RiTa.articlize(\"kitten\"); // returns -> 'a kitten'<br/><br/>RiTa.articlize(\"honor\"); // returns -> 'an honor'",
+      "description": "Prepends the correct article (\"a\" or \"an\") for a word, based on its <a href='../phonemes'>phonemes</a>",
+      "syntax": "RiTa.articlize(verb);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the word prepended with the appropriate article (\"a\" or \"an\")"
+        }
+      ],
+      "related": "<a href='../phones'>RiTa.phones()</a>"
+    },
+    {
+      "name": "pastPart",
+      "example": "RiTa.pastPart(\"write\"); // returns -> written",
+      "description": "Returns the past participle form of the verb.",
+      "syntax": "RiTa.pastPart(verb);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the root form of the verb"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the past participle form of the verb"
+        }
+      ]
+    },
+    {
+      "name": "presentPart",
+      "example": "RiTa.presentPart(\"sit\"); // returns -> sitting",
+      "description": "Returns the present participle form of the verb",
+      "syntax": "RiTa.presentPart(verb);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the root form of the verb"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the present participle form of the verb"
+        }
+      ]
+    },
+    {
+      "name": "stem",
+      "example": "<br/>s = RiTa.stem(\"cakes\"); // returns -> cake",
+      "description": "Extracts base roots from a word according to the Pling stemming algorithm <br/>",
+      "syntax": "RiTa.stem(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to analyze"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the stemmed form of the word"
+        }
+      ]
+    },
+    {
+      "name": "pluralize",
+      "example": "<br/>pluralized = RiTa.pluralize(\"dog\"); // returns \"dogs\"<br/><br/>pluralized = RiTa.pluralize(\"mouse\"); // returns \"mice\"<br/><br/>",
+      "description": "Pluralizes a noun according to pluralization rules. Returns the input if already plural.",
+      "syntax": "RiTa.pluralize(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the noun"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "{boolean} <b>options.dbug</b>: if true, output debug logs to console (optional)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the (regular or irregular) plural form of the noun"
+        }
+      ]
+    },
+    {
+      "name": "singularize",
+      "example": "<br/>singular = RiTa.singularize(\"dogs\"); // returns \"dog\"<br/><br/>singular = RiTa.singularize(\"mice\"); // returns \"mouse\"<br/><br/>",
+      "description": "Singularize a word according to singularization rules",
+      "syntax": "RiTa.singularize(word);<br>RiTa.sigularize(word, option);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the noun"
+        },
+        {
+          "type": "Object<br>(or Map in Java)",
+          "desc": "{boolean} <b>options.dbug</b>: if true, output debug log to console (optional)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the singular form of the noun"
+        }
+      ]
+    },
+    {
+      "name": "hasWord",
+      "example": "RiTa.hasWord(\"apple\");",
+      "description": "Returns true if the word (or its root form) is in the lexicon (case-insensitive).",
+      "syntax": "RiTa.hasWord(word);<br>RiTa.hasWord(word, options);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "word"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional)<br><br>{boolean} <b>options.noDerivations</b>:<br>if true, ignore derivations and only search for exact (uninflected) words in the lexicon (default=false)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the current lexicon includes the word, else false"
+        }
+      ]
+    },
+    {
+      "name": "alliterations",
+      "async": true,
+      "example": "RiTa.alliterations(\"cat\"); <br/>RiTa.alliterations(\"cat\", {limit: 10});<br/>RiTa.alliterations(\"cat\", { maxLength: 4, numSyllables: 1 });",
+      "description": "Finds alliterations by comparing the phonemes of the input string to those of each word in the lexicon via a minimum-edit-distance metric.",
+      "syntax": "RiTa.alliterations(word);<br/>RiTa.alliterations(word, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "input word"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional)<br/><br/>{int} options.minLength: <br/>minimum number of characters in target word (default=3)<br/><br/>{int} options.maxLength: <br/>maximum number of characters in target word<br/><br/>{int} options.numSyllables: <br/>target # of syllables in the word<br/><br/>{int} options.limit: <br/>maximum # of results to return (default=10)<br/><br/>{String} options.pos: <br/>the target part-of-speech for the word<br/>either from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]<br/><br/>{boolean} options.silent:<br>if true, do not output logs and warnings to console while running<br><br>{boolean} options.shuffle:<br>if true, iterate over lexicon in random order<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "array of alliterations"
+        }
+      ],
+      "related": "<a href='../rhymes'>RiTa.rhymes()</a>, <a href='../search'>RiTa.search()</a>, <a href='../soundsLike'>RiTa.soundsLike()</a>, <a href='../spellsLike'>RiTa.spellsLike()</a>"
+    },
+    {
+      "name": "randomWord",
+      "example": "// a random word from the lexicon<br/>RiTa.randomWord();<br/><br/>// a random plural noun from the lexicon<br/>RiTa.randomWord({ pos: \"nns\"});<br/><br/>// a random word with 3 syllables and length 3 or 4<br/>RiTa.randomWord({ numSyllables: 3, maxLength: 4});",
+      "description": "Returns a random word from the lexicon that matches the specified criteria (length, syllable-count, phoneme pattern, stress pattern, part-of-speech, etc.)",
+      "syntax": "RiTa.randomWord()<br/>RiTa.randomWord(opts);<br><br>",
+      "parameters": [
+        {
+          "type": "String or Regex (JS), String or Pattern (Java)",
+          "desc": "(optional) regex for the return result to match"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional)<br/><br/>{int} options.minLength: <br/>minimum number of characters in target word (default=4)<br/><br/>{int} options.maxLength: <br/>maximum number of characters in target word<br/><br/>{int} options.numSyllables: <br/>target # of syllables in the word<br/><br/>{int} options.limit: <br/>maximum # of results to return (default=10)<br/><br>{String} options.type:<br>use \"stresses\" to indicate that the regex is for matching stress patterns<br>use \"phones\" to indicate that the regex is for matching phonemes<br><br/>{String} options.pos: <br/> the target part-of-speech for the word<br/>either from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]<br/><br/>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the random word"
+        }
+      ],
+      "related": "<a href='../randomSeed'>RiTa.randomSeed()</a>"
+    },
+    {
+      "name": "rhymes",
+      "async": true,
+      "example": "RiTa.rhymes(\"cat\"); <br/>RiTa.rhymes(\"cat\", {limit: 10});<br/>RiTa.rhymes(\"cat\", { maxLength: 4, numSyllables: 1 });",
+      "description": "Two words are considered as rhyming if their final stressed vowel and all following phonemes are identical",
+      "syntax": "RiTa.rhymes(word);<br>RiTa.rhymes(word, options);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "word"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional)<br/><br/>{int} options.minLength: <br/>minimum number of characters in target word (default=3)<br/><br/>{int} options.maxLength: <br/>maximum number of characters in target word<br/><br/>{int} options.numSyllables: <br/>target # of syllables in the word<br/><br/>{int} options.limit: <br/>maximum # of results to return (default=10)<br/><br/>{String} options.pos: <br/>the target part-of-speech for the word<br/>either from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]<br/><br/>{boolean} options.shuffle:<br>if true, iterate over lexicon in random order<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "rhymes for the word, or an empty array if none are found"
+        }
+      ],
+      "related": "<a href='../alliterations'>RiTa.alliterations()</a>, <a href='../search'>RiTa.search()</a>, <a href='../soundsLike'>RiTa.soundsLike()</a>, <a href='../spellsLike'>RiTa.spellsLike()</a>"
+    },
+    {
+      "name": "search",
+      "async": true,
+      "example": "RiTa.search();<br/>RiTa.search(\"tting\")<br/>RiTa.search('f-ah-n-t', { type: 'phones', pos: 'n', numSyllables: 2 })",
+      "description": "Searches for words in the lexicon that match the given criteria, either by length, syllable-count, phoneme, stress, part-of-speech, etc. If no regex or options are supplied, the full set of words is returned.",
+      "syntax": "RiTa.search()<br/>RiTa.search(regex);<br/>RiTa.search(regex, opts);",
+      "parameters": [
+        {
+          "type": "String or Regex (JS), String or Pattern (Java)",
+          "desc": "regex pattern to match (optional)"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional)<br/><br/>{int} options.minLength: <br/>minimum number of characters in target word (default=3)<br/><br/>{int} options.maxLength: <br/>maximum number of characters in target word<br/><br/>{int} options.numSyllables: <br/>target # of syllables in the word<br/><br/>{int} options.limit: <br/>maximum # of results to return (default=10)<br/><br>{String} options.type:<br>use \"stresses\" to indicate that the regex is for matching stress patterns<br>use \"phones\" to indicate that the regex is for matching phonemes<br><br/>{String} options.pos: <br/> the target part-of-speech for the word<br/>either from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]<br/><br/>{boolean} options.shuffle:<br>if true, iterate over lexicon in random order<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "array of words matching the search criteria in the lexicon (or all words if no criteria is provided)"
+        }
+      ],
+      "related": "<a href='../alliterations'>RiTa.alliterations()</a>, <a href='../rhymes'>RiTa.rhymes()</a>, <a href='../soundsLike'>RiTa.soundsLike()</a>, <a href='../spellsLike'>RiTa.spellsLike()</a>"
+    },
+    {
+      "name": "isAdverb",
+      "example": "RiTa.isAdverb(\"sleepily\");",
+      "description": "Returns true if the word has an adverb form. That is, if any of its possible parts of speech are any variant of an adverb in the <a href='../../postags.html'>Penn tag set</a> (e.g. rb, rbr, rbs)",
+      "syntax": "RiTa.isAdverb(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to test"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the word can be used as an adverb "
+        }
+      ]
+    },
+    {
+      "name": "isNoun",
+      "example": "RiTa.isNoun(\"cat\");",
+      "description": "Returns true if the word has a noun form. That is, if any of its possible parts of speech are any variant of a noun in the <a href='../../postags.html'>Penn tag set</a>(e.g. nn, nns, nnp, nnps)",
+      "syntax": "RiTa.isNoun(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to test"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the word can be used as a noun"
+        }
+      ]
+    },
+    {
+      "name": "isVerb",
+      "example": "RiTa.isVerb(\"run\");",
+      "description": "Returns true for if word has a verb form. That is, if any of its possible parts of speech are any variant of a verb in the <a href='../../postags.html'>Penn tag set</a> (e.g. vb, vbg, vbd, vbp, vbz)",
+      "syntax": "RiTa.isVerb(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to test"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the word can be used as a verb"
+        }
+      ]
+    },
+    {
+      "name": "isStopWord",
+      "example": "RiTa.isStopWord(\"the\");",
+      "description": "Returns true if the word is a 'stop word', a commonly used word that is often ignored in text processing. To use your own list, set RiTa.STOP_WORDS to a new array of (lowercase) words.<br>",
+      "syntax": "RiTa.isStopWord(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to test"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the word is a stop word, according to RiTa.STOP_WORDS"
+        }
+      ]
+    },
+    {
+      "name": "isAdjective",
+      "example": "RiTa.isAdjective(\"cold\");",
+      "description": "Returns true if word has an adjective form. That is, if any of its possible parts of speech are any variant of an adjective in the <a href='../../postags.html'>Penn tag set</a> (e.g. jj, jjr, jjs)",
+      "syntax": "RiTa.isAdjective(word);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to test"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the word can be used as an adjective"
+        }
+      ]
+    },
+    {
+      "name": "isAlliteration",
+      "example": "RiTa.isAlliteration(\"cat\",\"kitchen\");",
+      "description": "Returns true if the two words are alliterations (if their first stressed consonants match). Note: returns true if wordA.equals(wordB) and false if either (or both) are null.",
+      "syntax": "RiTa.isAlliteration(word1, word2);<br>RiTa.isAlliteration(word1, word2, noLTS);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the first word"
+        },
+        {
+          "type": "String",
+          "desc": "the second word"
+        },
+        {
+          "type": "boolean",
+          "desc": "(optional, only in Java) noLTS: if set to true the process will not use LTS (letter-to-sound rules), default=false"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the first stressed consonant of the two words match"
+        }
+      ]
+    },
+    {
+      "name": "isRhyme",
+      "example": "RiTa.isRhyme(\"cat\",\"mat\");",
+      "description": "Returns true if the two words rhyme, that is, if their final stressed vowel phoneme and all following phonemes are identical, else false.<br/><br/>Note: returns false if word1.equals(word2) or if either (or both) are null;<br/><br/>",
+      "syntax": "RiTa.isRhyme(word1, word2)<br/>RiTa.isRhyme(word1, word2, noLTS);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "word1"
+        },
+        {
+          "type": "String",
+          "desc": "word2"
+        },
+        {
+          "type": "boolean",
+          "desc": "(optional, only in Java) noLTS: if set to true the process will not use LTS (letter-to-sound rules), default=false"
+        }
+      ],
+      "returns": [
+        {
+          "type": "boolean",
+          "desc": "true if the two words rhyme, else false."
+        }
+      ]
+    },
+    {
+      "name": "soundsLike",
+      "async": true,
+      "example": "RiTa.soundsLike(\"happy\");<br/>RiTa.soundsLike(\"happy\", { matchSpelling: true });<br/>RiTa.soundsLike(\"happy\", { limit: 10, minDistance: 2 });<br/>RiTa.soundsLike(\"happy\", { numSyllables: 2, minDistance: 2 });<br/>RiTa.soundsLike(\"happy\", { minWordLength:10, numSyllables:2 });",
+      "description": "Compares the phonemes of the input word (using a version of the Levenstein min-edit distance algorithm) to each word in the lexicon, returning the set of closest matches.",
+      "syntax": "RiTa.soundsLike(word);<br/>RiTa.soundsLike(word, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to match"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional)<br/><br/>{bool} options.matchSpelling: <br/>if true will also attempt to match spelling<br/>by returning an intersection with <a href='../spellsLike'>RiTa.spellsLike</a> (default=false)<br/><br/>{int} options.minLength: <br/>minimum number of characters in target word (default=3)<br/><br/>{int} options.maxLength: <br/>maximum number of characters in target word<br/><br/>{int} options.numSyllables: <br/>target # of syllables in the word<br/><br/>{int} options.limit: <br/>maximum # of results to return (default=10)<br/><br/>{String} options.pos: <br/>the target part-of-speech for word in the result<br/>either from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]<br/><br/>{int} options.minDistance: <br/>the minimum distance of words from the target word<br/>(increase to get more results)<br/><br/>{boolean} options.shuffle:<br>if true, iterate over lexicon in random order<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the matching words"
+        }
+      ],
+      "related": "<a href='../spellsLike'>RiTa.spellsLike()</a>"
+    },
+    {
+      "name": "spellsLike",
+      "async": true,
+      "example": "RiTa.spellsLike(\"happy\");<br/>RiTa.spellsLike(\"happy\", { limit: 10 });<br/>RiTa.spellsLike(\"happy\", { limit: 10, minDistance: 2 });<br/>RiTa.spellsLike(\"happy\", { numSyllables: 2, minDistance: 2 });<br/>RiTa.spellsLike(\"happy\", { minWordLength:10, numSyllables:2 });",
+      "description": "Compares the letters of the input word (using a version of the Levenstein min-edit distance algorithm) to each word in the lexicon, returning the set of closest matches.",
+      "syntax": "RiTa.spellsLike(word)<br/>RiTa.spellsLike(word, opts)",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to match"
+        },
+        {
+          "type": "Object<br/>(or Map in Java)",
+          "desc": "options (optional)<br/><br/>{int} options.minLength: <br/>minimum number of characters in target word (default=3)<br/><br/>{int} options.maxLength: <br/>maximum number of characters in target word<br/><br/>{int} options.numSyllables: <br/>target # of syllables in the word<br/><br/>{int} options.limit: <br/>maximum # of results to return (default=10)<br/><br/>{String} options.pos: <br/>the target part-of-speech for the word<br/>either from the <a href='../../postags.html'>Penn tag set</a> or the simplified tag set [a, r, v, n]<br/><br/>{int} options.minDistance: <br/>the minimum distance of words from the target word<br/>(increase to get more results)<br/><br/>{boolean} options.shuffle:<br>if true, iterate over lexicon in random order<br><br>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the matching words"
+        }
+      ],
+      "related": "<a href='../soundsLike'>RiTa.soundsLike()</a>"
+    },
+    {
+      "name": "capitalize",
+      "example": "RiTa.capitalize(\"hello\"); // returns -> 'Hello'",
+      "description": "Capitalizes the first letter of the input string, leaving all other characters unchanged.",
+      "syntax": "RiTa.capitalize(string);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the string to capitalize"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String",
+          "desc": "the input string with its first character uppercased"
+        }
+      ]
+    },
+  
+    {
+      "name": "getTransforms",
+      "example": "names = RiTa.getTransforms();",
+      "description": "Returns the names of all currently registered <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript</a> transform functions.",
+      "syntax": "RiTa.getTransforms();",
+      "parameters": [],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "names of all registered transform functions"
+        }
+      ],
+      "related": "See <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript documentation</a>"
+    },
+    {
+      "name": "removeTransform",
+      "example": "RiTa.removeTransform(\"uc\");",
+      "description": "Removes a previously registered <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript</a> transform function by name.",
+      "syntax": "RiTa.removeTransform(name);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the name of the transform to remove"
+        }
+      ],
+      "returns": [],
+      "related": "See <a href=\"https://observablehq.com/@dhowe/riscript\">RiScript documentation</a>"
+    },
+    {
+      "name": "random",
+      "example": "RiTa.random();           // float in [0, 1)<br/>RiTa.random(10);         // float in [0, 10)<br/>RiTa.random(5, 10);      // float in [5, 10)<br/>RiTa.random([\"a\",\"b\",\"c\"]); // random element",
+      "description": "Returns a random number or a random element from an array.<br/><br/>With no arguments: a random float in [0, 1).<br/>With one numeric argument: a random float in [0, n).<br/>With two numeric arguments: a random float in [min, max).<br/>With an array argument: a random element from that array.",
+      "syntax": "RiTa.random();<br/>RiTa.random(max);<br/>RiTa.random(min, max);<br/>RiTa.random(array);",
+      "parameters": [
+        {
+          "type": "number or Object[]",
+          "desc": "max value, or an array to pick from (optional)"
+        },
+        {
+          "type": "number",
+          "desc": "max value when first argument is the min (optional)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "number or Object",
+          "desc": "a random number, or a random element from the supplied array"
+        }
+      ],
+      "related": "<a href='../randi'>RiTa.randi()</a>, <a href='../randomSeed'>RiTa.randomSeed()</a>, <a href='../randomOrdering'>RiTa.randomOrdering()</a>"
+    },
+    {
+      "name": "randi",
+      "example": "RiTa.randi(10);     // integer in [0, 10)<br/>RiTa.randi(5, 10);  // integer in [5, 10)",
+      "description": "Returns a random integer from a range. Like RiTa.random() but always returns a whole number (floor of the result).",
+      "syntax": "RiTa.randi(max);<br/>RiTa.randi(min, max);",
+      "parameters": [
+        {
+          "type": "number",
+          "desc": "upper bound (exclusive), or lower bound when two arguments are given"
+        },
+        {
+          "type": "number",
+          "desc": "upper bound (exclusive) when first argument is the lower bound (optional)"
+        }
+      ],
+      "returns": [
+        {
+          "type": "number",
+          "desc": "a random integer"
+        }
+      ],
+      "related": "<a href='../random'>RiTa.random()</a>, <a href='../randomSeed'>RiTa.randomSeed()</a>"
+    },
+    {
+      "name": "spellsLikeSync",
+      "example": "RiTa.spellsLikeSync(\"happy\");<br/>RiTa.spellsLikeSync(\"happy\", { limit: 5 });",
+      "description": "Synchronous version of <a href='../spellsLike'>RiTa.spellsLike()</a>. Compares the letters of the input word (using a version of the Levenstein min-edit distance algorithm) to each word in the lexicon, returning the set of closest matches.",
+      "syntax": "RiTa.spellsLikeSync(word);<br/>RiTa.spellsLikeSync(word, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to match"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional) — same as <a href='../spellsLike'>RiTa.spellsLike()</a>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the matching words"
+        }
+      ],
+      "related": "<a href='../spellsLike'>RiTa.spellsLike()</a>, <a href='../soundsLikeSync'>RiTa.soundsLikeSync()</a>"
+    },
+    {
+      "name": "soundsLikeSync",
+      "example": "RiTa.soundsLikeSync(\"happy\");<br/>RiTa.soundsLikeSync(\"happy\", { matchSpelling: true });",
+      "description": "Synchronous version of <a href='../soundsLike'>RiTa.soundsLike()</a>. Compares the phonemes of the input word to each word in the lexicon, returning the set of closest matches.",
+      "syntax": "RiTa.soundsLikeSync(word);<br/>RiTa.soundsLikeSync(word, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to match"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional) — same as <a href='../soundsLike'>RiTa.soundsLike()</a>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "the matching words"
+        }
+      ],
+      "related": "<a href='../soundsLike'>RiTa.soundsLike()</a>, <a href='../spellsLikeSync'>RiTa.spellsLikeSync()</a>"
+    },
+    {
+      "name": "rhymesSync",
+      "example": "RiTa.rhymesSync(\"cat\");<br/>RiTa.rhymesSync(\"cat\", { limit: 5 });",
+      "description": "Synchronous version of <a href='../rhymes'>RiTa.rhymes()</a>. Returns words that rhyme with the given word.",
+      "syntax": "RiTa.rhymesSync(word);<br/>RiTa.rhymesSync(word, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "the word to match"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional) — same as <a href='../rhymes'>RiTa.rhymes()</a>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "rhymes for the word, or an empty array if none are found"
+        }
+      ],
+      "related": "<a href='../rhymes'>RiTa.rhymes()</a>, <a href='../isRhyme'>RiTa.isRhyme()</a>"
+    },
+    {
+      "name": "searchSync",
+      "example": "RiTa.searchSync(\"tting\");<br/>RiTa.searchSync('f-ah-n-t', { type: 'phones', pos: 'n' });",
+      "description": "Synchronous version of <a href='../search'>RiTa.search()</a>. Searches for words in the lexicon matching the given criteria.",
+      "syntax": "RiTa.searchSync();<br/>RiTa.searchSync(pattern);<br/>RiTa.searchSync(pattern, opts);",
+      "parameters": [
+        {
+          "type": "String or Regex",
+          "desc": "pattern to match (optional)"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional) — same as <a href='../search'>RiTa.search()</a>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "array of words matching the search criteria"
+        }
+      ],
+      "related": "<a href='../search'>RiTa.search()</a>"
+    },
+    {
+      "name": "alliterationsSync",
+      "example": "RiTa.alliterationsSync(\"cat\");<br/>RiTa.alliterationsSync(\"cat\", { limit: 5 });",
+      "description": "Synchronous version of <a href='../alliterations'>RiTa.alliterations()</a>. Finds alliterations by comparing the phonemes of the input string to those of each word in the lexicon.",
+      "syntax": "RiTa.alliterationsSync(word);<br/>RiTa.alliterationsSync(word, opts);",
+      "parameters": [
+        {
+          "type": "String",
+          "desc": "input word"
+        },
+        {
+          "type": "Object",
+          "desc": "options (optional) — same as <a href='../alliterations'>RiTa.alliterations()</a>"
+        }
+      ],
+      "returns": [
+        {
+          "type": "String[]",
+          "desc": "array of alliterations"
+        }
+      ],
+      "related": "<a href='../alliterations'>RiTa.alliterations()</a>"
+    }
+  ]
+}

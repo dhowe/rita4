@@ -169,7 +169,7 @@ class RiTa {
    * @param {string} char 
    * @returns {boolean} - true if the character is a vowel, else false
    */
-  static isVowel(char) { // remove?
+  static isVowel(char) {
     return char && char.length === 1 && RiTa.VOWELS.includes(char);
   }
 

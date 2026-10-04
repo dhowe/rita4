@@ -1,0 +1,123 @@
+{
+  "classes": [
+    {
+      "class": "RiTa",
+      "statics": [
+        "addTransform",
+        "alliterations",
+        "alliterationsSync",
+        "analyze",
+        "articlize",
+        "capitalize",
+        "concordance",
+        "conjugate",
+        "evaluate",
+        "getTransforms",
+        "grammar",
+        "hasWord",
+        "isAbbrev",
+        "isAdjective",
+        "isAdverb",
+        "isAlliteration",
+        "isNoun",
+        "isPunct",
+        "isQuestion",
+        "isRhyme",
+        "isStopWord",
+        "isVerb",
+        "kwic",
+        "markov",
+        "pastPart",
+        "phones",
+        "pos",
+        "posInline",
+        "presentPart",
+        "pluralize",
+        "random",
+        "randi",
+        "randomOrdering",
+        "randomSeed",
+        "randomWord",
+        "removeTransform",
+        "rhymes",
+        "rhymesSync",
+        "search",
+        "searchSync",
+        "sentences",
+        "singularize",
+        "soundsLike",
+        "soundsLikeSync",
+        "spellsLike",
+        "spellsLikeSync",
+        "stem",
+        "stresses",
+        "syllables",
+        "tokens",
+        "tokenize",
+        "untokenize"
+      ],
+      "fields": [
+        "VERSION",
+        "SILENT",
+        "SILENCE_LTS",
+        "SPLIT_CONTRACTIONS",
+        "STOP_WORDS",
+        "PHONES",
+        "FIRST",
+        "SECOND",
+        "THIRD",
+        "PAST",
+        "PRESENT",
+        "FUTURE",
+        "SINGULAR",
+        "PLURAL",
+        "INFINITIVE",
+        "GERUND",
+        "NORMAL"
+      ]
+    },
+    {
+      "class": "RiGrammar",
+      "functions": [
+        "addRule",
+        "setRules",
+        "expand",
+        "removeRule",
+        "toJSON",
+        "toString"
+      ],
+      "statics": [
+        "fromJSON"
+      ],
+      "constructor": true
+    },
+    {
+      "class": "RiMarkov",
+      "functions": [
+        "addSentences",
+        "addText",
+        "addTokens",
+        "completions",
+        "generate",
+        "probabilities",
+        "size",
+        "stream",
+        "toString",
+        "toJSON"
+      ],
+      "constructor": true,
+      "statics": [
+        "fromJSON"
+      ]
+    },
+    {
+      "class": "RiScript",
+      "functions": [
+        "evaluate"
+      ],
+      "constructor": true,
+      "statics": [
+      ]
+    }
+  ]
+}
