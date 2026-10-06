@@ -113,14 +113,14 @@
                   <th scope="row">Name</th>
                   <!-- METHOD NAME -->
                   <td>
-                    <h4>evaluate </h4>
+                    <h4>addTransform </h4>
                   </td>
                 </tr>
 
                 <tr class="">
                   <th scope="row">Description</th>
                   <!-- DESCRIPTION  -->
-                  <td>Parses and executes a <a href="https://observablehq.com/@dhowe/riscript">RiScript</a> string. Available as either a static or instance function.</td>
+                  <td>Registers a new transform function that may then be used in RiScript evaluations. Transform functions accept and return strings.</td>
                 </tr>
 
                 <tr class='Example'>
@@ -129,7 +129,7 @@
                     <div class="example">
 
                       <!-- EXAMPLE  -->
-                      <pre class="margin">// Static<br/><br/>RiScript.evaluate("He was [happy | sad | indifferent]");<br/>RiScript.evaluate("He was [happy | sad | &#36;emo]", context);<br/><br/>// Instance<br/><br/>riscript.evaluate("He was [happy | sad | indifferent]");<br/>riscript.evaluate("He was [happy | sad | &#36;emo]", context);</pre>
+                      <pre class="margin">RiScript.addTransform("uc", (s) => s.toUpperCase());<br/>const rs = new RiScript();<br/>result = rs.evaluate("[hello].uc()");</pre>
                     </div>
                   </td>
                 </tr>
@@ -137,7 +137,7 @@
                   <th scope="row">Parameters</th>
                   <td>
                     <!-- PARAMETERS  -->
-                    <table cellpadding="0" cellspacing="0" border="0" class="sub-table"><tr class=''><th width='25%' scope='row' class=nobold>String</th><td width='75%'>the input</td></tr><tr class=''><th width='25%' scope='row' class=nobold>Object</th><td width='75%'>the context for any referenced variables or functions (optional)</td></tr><tr class=''><th width='25%' scope='row' class=nobold>Object</th><td width='75%'>(optional) options <br><br>{boolean} <b>options.trace</b>:<br>if true, output verbose log to console for debugging (default=false)<br><br>{boolean} <b>options.onepass</b>:<br>if true, run only one pass through engine(default=false)<br><br>{boolean} <b>options.v2Compatible</b>: <br>if true, use RiScript v2-compatible syntax  (default=false)</td></tr></table>
+                    <table cellpadding="0" cellspacing="0" border="0" class="sub-table"><tr class=''><th width='25%' scope='row' class=nobold>String</th><td width='75%'>the name of the transform</td></tr><tr class=''><th width='25%' scope='row' class=nobold>Function</th><td width='75%'>the function to call, which should accept and return a string</td></tr></table>
                   </td>
                 </tr>
 
@@ -146,7 +146,7 @@
                   <th scope="row">Returns</th>
                   <td>
                     <!-- RETURNS/TYPE (for variables)  -->
-                    <table cellpadding="0" cellspacing="0" border="0" class="sub-table"><tr class=''><th width='25%' scope='row' class=nobold>String</th><td width='75%'>the result of the evaluation</td></tr></table>
+                    <table cellpadding="0" cellspacing="0" border="0" class="sub-table">void</table>
                   </td>
                 </tr>
 
@@ -169,7 +169,7 @@
 
                   <!-- SYNTAX  -->
                   <td>
-                    <pre>riscript.evaluate(string);<br/>riscript.evaluate(string, context);</pre>
+                    <pre>rs.addTransform(name, function);</pre>
                   </td>
                 </tr>
 
