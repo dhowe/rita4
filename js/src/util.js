@@ -7,12 +7,6 @@ const HAS_OWN = Object.prototype.hasOwnProperty;
 
 class Util {
 
-  // Own-property test that ignores Object.prototype members (e.g. 'toString'),
-  // and avoids the cost of a per-call method lookup.
-  static hasOwn(obj, key) {
-    return HAS_OWN.call(obj, key);
-  }
-
   // Takes a syllabification and turns it into a string of phonemes,
   // delimited with dashes, with spaces between syllables
   static syllablesToPhones(syllables) {
@@ -36,6 +30,11 @@ class Util {
     }
 
     return ret.join(' ');
+  }
+
+  // Own-property test ignoring Object.prototype members (e.g. 'toString')
+  static hasOwn(obj, key) {
+    return HAS_OWN.call(obj, key);
   }
 
   static syllablesFromPhones(input) { // adapted from FreeTTS
@@ -125,11 +124,13 @@ class Util {
   static isNum(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
   }
-  
+
   static numOpt(opts, name, def = 0) {
     return Util.isNum(opts?.[name]) ? opts[name] : def;
   }
 }
+
+
 
 // CLASSES ////////////////////////////////////////////////////
 
