@@ -20,8 +20,8 @@ class Tagger {
 
     // check irregular verbs (added 7/31/21) 
     if (this._isNoLexIrregularVerb(word)) return true;
-    if (conj.IRREG_VERBS_LEX_VB.hasOwnProperty(word)) return true;
-    if (conj.IRREG_VERBS_NOLEX.hasOwnProperty(word)) return true;
+    if (Util.hasOwn(conj.IRREG_VERBS_LEX_VB, word)) return true;
+    if (Util.hasOwn(conj.IRREG_VERBS_NOLEX, word)) return true;
 
     // any verbs (vb*) in lexicon
     let pos = this.allTags(word, opts);
@@ -548,7 +548,7 @@ class Tagger {
       if (word.includes("-")) {
         if (result[i] !== '__HYPH__') continue; // in dict
         if (word === '--') continue; // double hyphen treated as dash
-        if (HYPHENATEDS.hasOwnProperty(word)) {
+        if (Util.hasOwn(HYPHENATEDS, word)) {
           result[i] = HYPHENATEDS[word];
           if (dbug) console.log(word + ": " + HYPHENATEDS[word] + " ACC: special");
           continue;

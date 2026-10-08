@@ -22,17 +22,17 @@ class Lexicon {
     if (!word || !word.length) return false;
 
     let token = word.toLowerCase();
-    let exists = this.data.hasOwnProperty(token);
+    let exists = Util.hasOwn(this.data, token);
     let noDerivations = opts.noDerivations;
 
     if (noDerivations || exists) return exists;
 
-    // Not strict - check for plurals forms and conjugations
+    // Not strict - check for plural forms and conjugations
 
     // 1) Check if word might be a plural form of a noun
     // in the lexicon - for example, 'dogs' or 'oxen'
     let sing = this.RiTa.singularize(token);
-    if (this.data.hasOwnProperty(sing)) {
+    if (Util.hasOwn(this.data, sing)) {
       let tags = this.RiTa.tagger.allTags(sing);
       if (tags.includes('nn')) return true;
     }
@@ -40,7 +40,7 @@ class Lexicon {
     // 2) Check if word might be a conjugated form of a verb 
     // in the lexicon - for example, 'changed' or 'changes'
     let vlemma = this.RiTa.conjugator.unconjugate(token, opts);
-    if (vlemma && this.data.hasOwnProperty(vlemma)) {
+    if (vlemma && Util.hasOwn(this.data, vlemma)) {
       let tags = this.RiTa.tagger.allTags(vlemma);
       if (tags.includes('vb')) return true;
     }
@@ -217,7 +217,7 @@ class Lexicon {
     let result = this.searchSync(pattern, opts);
 
     // relax our pos constraints if we got nothing
-    if (result.length < 1 && opts.hasOwnProperty('pos')) {
+    if (result.length < 1 && Util.hasOwn(opts, 'pos')) {
       opts.strictPos = false;
       result = this.searchSync(pattern, opts);
     }
@@ -666,6 +666,7 @@ class Lexicon {
 
   _lookupRaw(word) {
     word = word && word.toLowerCase();
+    if (!Util.hasOwn(this.data, word)) return undefined;
     return this.data[word];
   }
 

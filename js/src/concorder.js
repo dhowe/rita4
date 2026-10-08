@@ -66,15 +66,15 @@ class Concorder {
 
   _buildModel() {
     if (!this.words || this.words.length == 0) throw Error('No text in model'); 
-    this.model = {};
+    // Use a null-prototype object so that words matching Object.prototype
+    // members (e.g. 'constructor', 'toString', '__proto__') cannot collide
+    // with inherited properties. Fixes the old Firefox 'watch' bug (#XYZ).
+    this.model = Object.create(null);
     for (let j = 0; j < this.words.length; j++) {
       let word = this.words[j];
       if (this._isIgnorable(word)) continue;
       let _lookup = this._lookup(word);
-      // The typeof check below fixes a strange bug in Firefox: #XYZ
-      // where the string 'watch' comes back from _lookup as a function
-      // TODO: resolve in a better way
-      if (!_lookup || typeof _lookup !== 'object') {
+      if (!_lookup) {
         _lookup = { word: word, key: this._compareKey(word), indexes: [] };
         this.model[_lookup.key] = _lookup;
       }

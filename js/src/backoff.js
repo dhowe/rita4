@@ -451,7 +451,7 @@ export default class BackoffModel extends SuffixGram {
     // resolve any aliases to their canonical names
     const aliases = BackoffModel.generationAliases;
     Object.keys(resolved).forEach(key => {
-      if (aliases.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(aliases, key)) {
         const canonical = aliases[key];
         resolved[canonical] ??= resolved[key];
         delete resolved[key];
@@ -461,7 +461,7 @@ export default class BackoffModel extends SuffixGram {
       resolved[o] ??= BackoffModel.generationDefaults[o];
     });
     Object.keys(resolved).forEach(key => {
-      if (!BackoffModel.generationDefaults.hasOwnProperty(key) && !ignorableKeys.includes(key)) {
+      if (!Object.prototype.hasOwnProperty.call(BackoffModel.generationDefaults, key) && !ignorableKeys.includes(key)) {
         throw Error(`Invalid option key: ${key}`);
       }
     });
