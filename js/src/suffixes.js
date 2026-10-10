@@ -214,16 +214,6 @@ export default class SuffixArray {
     return records;
   }
 
-  static fromJSONOrig(json) {
-    let t = Date.now();
-    let obj = typeof json === 'string' ? JSON.parse(json) : json;
-    let sa = Object.assign(new SuffixArray(), obj);
-    if (!SuffixArray.SILENT) {
-      console.log('Processed JSON in ' + (Date.now() - t) + 'ms');
-    }
-    return sa;
-  }
-
   /**
    * Binary search that returns indices [min, max] so that the interval 
    * this.input[s..r] contains all suffixes starting with the tokens

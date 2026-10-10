@@ -724,4 +724,43 @@ describe('Conjugator', function () {
     expect(RiTa.conjugate("repurchase", opt)).eq("have repurchased");
     expect(RiTa.conjugate("roast", opt)).eq("have roasted");
   });
+
+  it('Should handle stem lookup correctly', function () {
+
+    // Regression: _handleStem was rewritten from a regex-scan to a binary-searched
+    // verb index + memo cache; these assert the result is unchanged
+    const conj = RiTa.conjugator;
+
+    // identity cases (base verbs / non-verbs return the word)
+    ['be', 'been', 'goes', 'running', 'walked', 'bettering'].forEach(w => {
+      expect(conj._handleStem(w)).eq(w);
+    });
+
+    // stem-mapping cases (noun -> verb via longest-prefix match)
+    expect(conj._handleStem('alien')).eq('alienate');
+    expect(conj._handleStem('bath')).eq('bathe');
+    expect(conj._handleStem('central')).eq('centralize');
+  });
+
+  it('Should invalidate the stem cache on lexicon swap', function () {
+
+    const conj = RiTa.conjugator;
+    const orig = RiTa.lexicon.data;
+    try {
+      const before = conj._handleStem('alien');
+      expect(before).eq('alienate');
+      expect(conj._stemCache.size).to.be.above(0);
+
+      // a new data object identity must reset the memo and its ref
+      RiTa.lexicon.data = { ...orig };
+      conj._handleStem('alien');
+      expect(conj._stemCacheRef).to.equal(RiTa.lexicon.data);
+      expect(conj._stemCache.size).to.equal(1);
+
+      // results stay correct across the swap
+      expect(conj._handleStem('alien')).eq(before);
+    } finally {
+      RiTa.lexicon.data = orig;
+    }
+  });
 });

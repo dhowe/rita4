@@ -43,6 +43,16 @@ class Conjugator {
     this.allVerbs = Object.keys(data).filter(word => data[word][1].split(' ').includes('vb'));
     this.verbsEndingInE = this.allVerbs.filter(v => v.endsWith("e"));
     this.verbsEndingInDouble = this.allVerbs.filter(v => /([^])\1$/.test(v));
+    this._buildVerbIndex();
+    this._stemCache = new Map();
+    this._stemCacheRef = data;
+  }
+
+  // Builds a lexicographically-sorted verb index for prefix lookup in _handleStem
+  _buildVerbIndex() {
+    this._sortedVerbs = this.allVerbs
+      .map((v, i) => [v, i])
+      .sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
   }
 
   // TODO: add handling of past tense modals.
@@ -428,28 +438,42 @@ class Conjugator {
 
   _handleStem = function (word) {
 
+    // memoize per word, invalidating if lexicon data was swapped
+    if (this._stemCacheRef !== this.RiTa.lexicon.data) {
+      this._stemCache = new Map();
+      this._stemCacheRef = this.RiTa.lexicon.data;
+    }
+    // return cached result if we have it
+    if (this._stemCache.has(word)) return this._stemCache.get(word);
+
+    let result = this._computeStem(word);
+    this._stemCache.set(word, result); // cache result
+    return result;
+  }
+
+  _computeStem(word) {
+
     if (this.RiTa.lexicon.data.hasOwnProperty(word)
       && this.RiTa.tagger.allTags(word).includes("vb")) {
       return word;
     }
 
     let w = word;
-    let allVerb = this.allVerbs;
     while (w.length > 1) {
-      let pattern = new RegExp("^" + w);
-      let guess = allVerb.filter(item => pattern.test(item));
-      if (!guess || guess.length < 1) {
+      let guess = this._verbsWithPrefix(w);
+      if (guess.length < 1) {
         w = w.slice(0, -1);
         continue;
       }
-      // always look for shorter words first
-      guess.sort((a, b) => a.length - b.length);
+      // always look for shorter words first (ties keep allVerbs order)
+      guess.sort((a, b) => a.len - b.len || a.i - b.i);
 
       // look for words (a===b or stem(b)===a) first
       for (let i = 0; i < guess.length; i++) {
-        if (word === guess[i]) return word;
-        if (this.RiTa.stem(guess[i]) === word) return guess[i];
-        if (this.unconjugate(this.RiTa.stem(guess[i])) === word) return guess[i];
+        let v = guess[i].v;
+        if (word === v) return word;
+        if (this.RiTa.stem(v) === word) return v;
+        if (this.unconjugate(this.RiTa.stem(v)) === word) return v;
       }
 
       w = w.slice(0, -1);
@@ -457,6 +481,22 @@ class Conjugator {
 
     // can't find possible word in dict, return original
     return word;
+  }
+
+  // All verbs starting with `prefix` via binary search over sorted index
+  _verbsWithPrefix(prefix) {
+    let arr = this._sortedVerbs, lo = 0, hi = arr.length;
+    while (lo < hi) {
+      let mid = (lo + hi) >> 1;
+      if (arr[mid][0] < prefix) lo = mid + 1; else hi = mid;
+    }
+    let out = [];
+    for (let i = lo; i < arr.length; i++) {
+      let v = arr[i][0];
+      if (!v.startsWith(prefix)) break;
+      out.push({ v: v, i: arr[i][1], len: v.length });
+    }
+    return out;
   }
 }
 
