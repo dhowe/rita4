@@ -93,6 +93,19 @@ describe("Lexicon", function() {
     result = RiTa.randomWord({ numSyllables: 5 });
     expect(result.length > 0, "5 syllables: " + result).to.be.true;
   });
+  it("Should not mutate the caller options object", function() {
+    let opts = { numSyllables: 2 };
+    RiTa.randomWord(opts);
+    expect("limit" in opts, "randomWord leaked limit").to.be.false;
+    expect("shuffle" in opts, "randomWord leaked shuffle").to.be.false;
+    opts = { pos: "nn" };
+    RiTa.searchSync(/^a/, opts);
+    expect("targetPos" in opts, "search leaked targetPos").to.be.false;
+    expect("minDistance" in opts, "search leaked minDistance").to.be.false;
+    opts = { limit: 5 };
+    RiTa.rhymesSync("cat", opts);
+    expect("maxLength" in opts, "rhymes leaked maxLength").to.be.false;
+  });
   it("Should call randomWord with regex", function() {
     let result = RiTa.randomWord("^a");
     expect(/^a/.test(result)).to.be.true;

@@ -54,7 +54,7 @@ class Lexicon {
 
   alliterationsSync(theWord, opts = {}) {
 
-    this._parseArgs(opts);
+    opts = this._parseArgs(opts);
     if (!theWord || typeof theWord !== 'string' || theWord.length < 2) {
       return [];
     }
@@ -119,7 +119,7 @@ class Lexicon {
 
   rhymesSync(theWord, opts = {}) {
 
-    this._parseArgs(opts);
+    opts = this._parseArgs(opts);
 
     if (!theWord || !theWord.length || theWord.length < 2) return [];
 
@@ -171,8 +171,7 @@ class Lexicon {
 
   spellsLikeSync(word, options = {}) {
     if (!word || !word.length) return [];
-    options.type = 'letter';
-    return this._byTypeSync(word, options);
+    return this._byTypeSync(word, { ...options, type: 'letter' });
   }
 
   async soundsLike(word, options = {}) {
@@ -207,8 +206,9 @@ class Lexicon {
       }
     }
 
-    // delegate to search {limit=1, shuffle=true, strictPos=true, minLength=4}  
-    opts = opts || {}; // keep
+    // delegate to search {limit=1, shuffle=true, strictPos=true, minLength=4}
+    // (copy so we don't mutate the caller's options object)
+    opts = { ...opts };
     opts.limit = 1;
     opts.shuffle = true;
     opts.strictPos = true;
@@ -243,7 +243,7 @@ class Lexicon {
     if (!pattern && !options) return words;
 
     let { regex, opts } = this._parseRegex(pattern, options);
-    this._parseArgs(opts);
+    opts = this._parseArgs(opts);
 
     // randomize list order if shuffle is true
     if (opts.shuffle) words = this.RiTa.randomizer.shuffle(words);
@@ -301,7 +301,7 @@ class Lexicon {
 
   _byTypeSync(theWord, opts) {
 
-    this._parseArgs(opts); // TODO: add minLimit (minResultCount) ?
+    opts = this._parseArgs(opts);
 
     const dict = this.data;
     const input = theWord.toLowerCase();
@@ -412,16 +412,22 @@ class Lexicon {
 
   // Handles: pos, limit, numSyllables, minLength, maxLength
   // potentially appends pluralize, conjugate, targetPos
-  _parseArgs(opts) {
+  _parseArgs(options) {
 
+    // Return a copy rather than mutating the caller's object
+    const opts = { ...options };
+
+    // set defaults for limit, minDistance, numSyllables, maxLength, minLength
     opts.limit = Util.numOpt(opts, 'limit', 10);
     opts.minDistance = Util.numOpt(opts, 'minDistance', 1);
     opts.numSyllables = Util.numOpt(opts, 'numSyllables', 0);
     opts.maxLength = Util.numOpt(opts, 'maxLength', Number.MAX_SAFE_INTEGER);
     opts.minLength = Util.numOpt(opts, 'minLength', 3);
 
+    // ensure limit is at least 1, otherwise set to max safe integer
     if (opts.limit < 1) opts.limit = Number.MAX_SAFE_INTEGER;
 
+    // handle pos, pluralize, conjugate, targetPos
     let tpos = opts.pos || false;
     if (tpos && tpos.length) {
       opts.pluralize = (tpos === "nns");
@@ -431,8 +437,9 @@ class Lexicon {
       else if (tpos === "r") tpos = "rb";
       else if (tpos === "a") tpos = "jj";
     }
-
     opts.targetPos = tpos;
+
+    return opts;
   }
 
   _reconjugate(word, pos) {

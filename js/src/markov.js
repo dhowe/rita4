@@ -93,16 +93,16 @@ export default class RiMarkov {
     return (numSentences === 1) ? result[0] : result;
   }
 
-  addText() {
-    return this.model.addText.apply(this.model, arguments);
+  addText(...args) {
+    return this.model.addText(...args);
   }
 
-  addSentences() {
-    return this.model.addSentences.apply(this.model, arguments);
+  addSentences(...args) {
+    return this.model.addSentences(...args);
   }
 
-  addTokens() {
-    return this.model.addTokens.apply(this.model, arguments);
+  addTokens(...args) {
+    return this.model.addTokens(...args);
   }
 
   /*

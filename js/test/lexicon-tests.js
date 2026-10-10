@@ -127,6 +127,26 @@ describe('Lexicon', function () {
     expect(result.length > 0, "5 syllables: " + result).to.be.true;
   });
 
+  it('Should not mutate the caller options object', function () {
+
+    // Regression: randomWord/search/rhymes previously wrote derived defaults
+    // (limit, shuffle, targetPos, minDistance, ...) onto the options object
+    // passed in, so a reused literal accumulated state across calls.
+    let opts = { numSyllables: 2 };
+    RiTa.randomWord(opts);
+    expect('limit' in opts, 'randomWord leaked limit').to.be.false;
+    expect('shuffle' in opts, 'randomWord leaked shuffle').to.be.false;
+
+    opts = { pos: 'nn' };
+    RiTa.searchSync(/^a/, opts);
+    expect('targetPos' in opts, 'search leaked targetPos').to.be.false;
+    expect('minDistance' in opts, 'search leaked minDistance').to.be.false;
+
+    opts = { limit: 5 };
+    RiTa.rhymesSync('cat', opts);
+    expect('maxLength' in opts, 'rhymes leaked maxLength').to.be.false;
+  });
+
   it('Should call randomWord with regex', function () {
 
     // regex string as first parameter
