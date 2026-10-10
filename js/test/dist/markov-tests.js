@@ -1018,4 +1018,26 @@ describe("Markov", function() {
     const rm2 = new RiMarkov(exampleStr);
     expect(() => [...rm2.stream({ prompt: ["The"] })]).to.throw();
   });
+  it("should be reproducible with RiTa.randomSeed", function() {
+    const text = "The cat sat on the mat. The dog ran in the park. A bird flew over the house. The fish swam in the pond. The horse ran through the field. The mouse hid in the wall. The cat chased the mouse. The dog chased the cat. The bird ate the fish.";
+    const gen = (seed) => {
+      RiTa.randomSeed(seed);
+      const rm = new RiMarkov(2);
+      rm.addText(text);
+      return rm.generate({ numSentences: 3, maxLength: 12 });
+    };
+    try {
+      const one = gen(1), two = gen(1), other = gen(7);
+      expect(one).to.eql(two);
+      expect(one).to.not.eql(other);
+    } finally {
+      RiTa.randomSeed(Date.now());
+    }
+  });
+  it("should honor maxBacktracks as a constructor option", function() {
+    const rm = new RiMarkov(3, { maxBacktracks: 50 });
+    expect(rm.opts.maxBacktracks).to.equal(50);
+    expect(() => BackoffModel.resolveOpts(3, { maxBacktracks: 50 })).to.not.throw();
+    expect(BackoffModel.resolveOpts(3, { maxBacktracks: 50 }).maxBacktracks).to.equal(50);
+  });
 });

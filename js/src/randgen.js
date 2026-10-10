@@ -96,7 +96,7 @@ class SeededRandom {
    */
   pselect2(weightsArray) {
     let sum = weightsArray.reduce((acc, ele) => acc + ele, 0);
-    let rand = Math.random() * sum; // from 0 - sum
+    let rand = this._rndf() * sum; // from 0 - sum
     return weightsArray.find(ele => (rand -= ele) < 0);
   }
 

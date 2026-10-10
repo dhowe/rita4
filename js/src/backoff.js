@@ -8,9 +8,9 @@ export default class BackoffModel extends SuffixGram {
 
   static generationDefaults = {
     debug: false, debugCache: false, minLength: 5, maxLength: 999, prompt: 0,
-    maxAttempts: 999, forceOriginal: false, maxLengthMatch: Infinity,
-    temp: 1, topK: 20, depth: 50, allowSpecial: false, sortByProb: false,
-    strictBackoff: false
+    maxAttempts: 999, maxBacktracks: 9999, forceOriginal: false,
+    maxLengthMatch: Infinity, temp: 1, topK: 20, depth: 50,
+    allowSpecial: false, sortByProb: false, strictBackoff: false
   }
 
   static generationAliases = {
@@ -59,7 +59,7 @@ export default class BackoffModel extends SuffixGram {
    * @param {number}   [opts.minLength=5]    - minimum tokens before stopping a sentence
    * @param {number}   [opts.maxLength=999]  - max tokens to generate per sentence before giving up
    * @param {number}   [opts.maxAttempts=999]   - max outer reseed attempts before giving up
-   * @param {number}   [opts.maxBacktracks=20000] - max inner backtrack steps per attempt
+   * @param {number}   [opts.maxBacktracks=9999] - max inner backtrack steps per attempt
    * @param {boolean}  [opts.allowSpecial=false] - whether to allow special tokens in the output
    * @param {number}   [opts.maxLengthMatch=Infinity] - max length of sequence allowed to match training data
    * @param {boolean}  [opts.debug=false] - whether to log debug info during generation
@@ -210,7 +210,7 @@ export default class BackoffModel extends SuffixGram {
         }
         // weighted select using BackoffModel's pselect method ??
         weightSum += prob;
-        if (Math.random() * weightSum < prob) {
+        if (SuffixGram.random() * weightSum < prob) {
           chosenToken = token;
         }
       }
@@ -313,7 +313,7 @@ export default class BackoffModel extends SuffixGram {
       let chosen = candidates[candidates.length - 1][0], weightSum = 0;
       for (const [token, prob] of candidates) {
         weightSum += prob;
-        if (Math.random() * weightSum < prob) chosen = token;
+        if (SuffixGram.random() * weightSum < prob) chosen = token;
       }
       return chosen;
     };
@@ -432,7 +432,7 @@ export default class BackoffModel extends SuffixGram {
     if (typeof dist !== 'object') throw Error('object required');
 
     let cutoff = 0;
-    let point = Math.random();
+    let point = SuffixGram.random();
     let keys = Object.keys(dist);
     for (let i = 0; i < keys.length - 1; ++i) {
       let tok = keys[i], prob = dist[tok];

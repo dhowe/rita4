@@ -1346,4 +1346,41 @@ describe('Markov', function () {
     const rm2 = new RiMarkov(exampleStr);
     expect(() => [...rm2.stream({ prompt: ['The'] })]).to.throw();
   });
+
+  it('should be reproducible with RiTa.randomSeed', function () {
+
+    // Regression: Markov sampling used Math.random(), bypassing the seeded
+    // Mersenne Twister, so RiTa.randomSeed() had no effect on generate()
+    const text = 'The cat sat on the mat. The dog ran in the park. A bird flew '
+      + 'over the house. The fish swam in the pond. The horse ran through the '
+      + 'field. The mouse hid in the wall. The cat chased the mouse. The dog '
+      + 'chased the cat. The bird ate the fish.';
+
+    const gen = (seed) => {
+      RiTa.randomSeed(seed);
+      const rm = new RiMarkov(2);
+      rm.addText(text);
+      return rm.generate({ numSentences: 3, maxLength: 12 });
+    };
+
+    try {
+      const one = gen(1), two = gen(1), other = gen(7);
+      expect(one).to.eql(two);              // same seed => same output
+      expect(one).to.not.eql(other);        // different seed => different output
+    } finally {
+      RiTa.randomSeed(Date.now());          // don't leak a fixed seed into other tests
+    }
+  });
+
+  it('should honor maxBacktracks as a constructor option', function () {
+
+    // Regression: RiMarkov copies instance defaults from generationDefaults,
+    // so maxBacktracks was silently dropped when it was missing from that map
+    const rm = new RiMarkov(3, { maxBacktracks: 50 });
+    expect(rm.opts.maxBacktracks).to.equal(50);
+
+    // and it must be a valid option key (resolveOpts rejects unknown keys)
+    expect(() => BackoffModel.resolveOpts(3, { maxBacktracks: 50 })).to.not.throw();
+    expect(BackoffModel.resolveOpts(3, { maxBacktracks: 50 }).maxBacktracks).to.equal(50);
+  });
 });

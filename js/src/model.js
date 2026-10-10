@@ -207,4 +207,13 @@ export default class SuffixGram {
   static isObject(obj) {
     return typeof obj === 'object' && Object.getPrototypeOf(obj) === Object.prototype;
   }
+
+  /**
+   * Returns a random float in [0,1) from the shared seeded RNG (RiTa.randomizer)
+   * when available, so that RiTa.randomSeed() makes generation reproducible.
+   * Falls back to Math.random() for standalone use without a loaded RiTa.
+   */
+  static random() {
+    return SuffixGram.RiTa ? SuffixGram.RiTa.randomizer.random() : Math.random();
+  }
 }
