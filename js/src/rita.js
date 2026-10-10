@@ -808,16 +808,18 @@ RiTa.GERUND = 2;
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
 
-// O(1) membership mirrors for the word lists above. The arrays remain public
-// (users may read or reassign them per the docs), so each Set is rebuilt
-// lazily when its source array is reassigned. Note: in-place mutation of an
-// array is not detected -- reassign the array to pick up changes.
+// Fast set mirrors for the word arrays above; each Set is rebuilt
+// lazily when its source array changes; reassignment is detected, and
+// in-place push/pop/splice is caught by the length check.
 function defineSetMirror(name, getArray) {
-  let ref = getArray(), set = new Set(ref);
+  let ref = getArray(), len = ref.length, set = new Set(ref);
   Object.defineProperty(RiTa, name, {
     configurable: true, enumerable: false,
     get() {
-      if (ref !== (ref = getArray())) set = new Set(ref);
+      const arr = getArray();
+      if (arr !== ref || arr.length !== len) {
+        ref = arr, len = arr.length, set = new Set(arr);
+      }
       return set;
     }
   });

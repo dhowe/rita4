@@ -224,9 +224,6 @@ export default class BackoffModel extends SuffixGram {
         break;
       }
 
-      // hard stop at maxLength
-      if (generated >= maxLength) break;
-
       // special tokens: stop if they match generateUntil, otherwise advance context
       if (isSpecial(token)) {
         if (isUntil(token, context.slice(prompt.length)) && totalSoFar + 1 >= minLength) {

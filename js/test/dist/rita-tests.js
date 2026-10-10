@@ -714,6 +714,20 @@ describe("Core", () => {
     }
     expect(RiTa.isStopWord("the")).to.be.true;
   });
+  it("Should honor in-place mutation of the word lists", function() {
+    const list = RiTa.STOP_WORDS;
+    const len = list.length;
+    try {
+      list.push("quokkaterm");
+      expect(RiTa.isStopWord("quokkaterm")).to.be.true;
+      expect(RiTa.STOP_WORDS_SET.size).to.eq(new Set(list).size);
+      list.pop();
+      expect(RiTa.isStopWord("quokkaterm")).to.be.false;
+    } finally {
+      if (list.length > len) list.length = len;
+    }
+    expect(RiTa.STOP_WORDS_SET.has("quokkaterm")).to.be.false;
+  });
   function ok(a, m) {
     expect(a, m).to.be.true;
   }
