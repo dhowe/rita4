@@ -693,6 +693,27 @@ describe("Core", () => {
       RiTa.lexicon.data = orig;
     }
   });
+  it("Should use O(1) Set mirrors consistent with the word lists", function() {
+    const check = (arr, set) => {
+      arr.forEach((w) => expect(set.has(w), "missing " + w).to.be.true);
+    };
+    check(RiTa.STOP_WORDS, RiTa.STOP_WORDS_SET);
+    check(RiTa.MASS_NOUNS, RiTa.MASS_NOUNS_SET);
+    check(RiTa.QUESTIONS, RiTa.QUESTIONS_SET);
+    expect(RiTa.STOP_WORDS_SET.has("notarealstopword")).to.be.false;
+    expect(RiTa.MASS_NOUNS_SET.has("notarealmassnoun")).to.be.false;
+  });
+  it("Should honor reassignment of the word lists", function() {
+    const orig = RiTa.STOP_WORDS;
+    try {
+      RiTa.STOP_WORDS = ["zebraterm"];
+      expect(RiTa.isStopWord("zebraterm")).to.be.true;
+      expect(RiTa.isStopWord("the")).to.be.false;
+    } finally {
+      RiTa.STOP_WORDS = orig;
+    }
+    expect(RiTa.isStopWord("the")).to.be.true;
+  });
   function ok(a, m) {
     expect(a, m).to.be.true;
   }

@@ -72,7 +72,7 @@ class Inflector {
 
     word = word.toLowerCase();
 
-    if (this.RiTa.MASS_NOUNS.includes(word)) {
+    if (this.RiTa.MASS_NOUNS_SET.has(word)) {
       dbug && console.log(word + " is mass noun");
       return true;
     }

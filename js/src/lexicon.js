@@ -519,7 +519,7 @@ class Lexicon {
   isMassNoun(w) {
     return w.endsWith("ness")
       || w.endsWith("ism")
-      || this.RiTa.MASS_NOUNS.includes(w);
+      || this.RiTa.MASS_NOUNS_SET.has(w);
   }
 
   // helpers ---------------------------------------------------------------

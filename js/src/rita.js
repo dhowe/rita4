@@ -160,7 +160,7 @@ class RiTa {
    * @returns {boolean} - true if the sentence is a question, else false
    */
   static isQuestion(sentence) {
-    return RiTa.QUESTIONS.includes
+    return RiTa.QUESTIONS_SET.has
       (RiTa.tokenize(sentence)[0].toLowerCase());
   }
 
@@ -516,7 +516,7 @@ class RiTa {
    * @returns {boolean} true if the word is a stop word, else false
    */
   static isStopWord(word) {
-    return RiTa.STOP_WORDS.includes(word.toLowerCase());
+    return RiTa.STOP_WORDS_SET.has(word.toLowerCase());
   }
 
   /**
@@ -807,6 +807,24 @@ RiTa.GERUND = 2;
 
 // For tokenization, Can't -> Can not, etc.
 RiTa.SPLIT_CONTRACTIONS = false;
+
+// O(1) membership mirrors for the word lists above. The arrays remain public
+// (users may read or reassign them per the docs), so each Set is rebuilt
+// lazily when its source array is reassigned. Note: in-place mutation of an
+// array is not detected -- reassign the array to pick up changes.
+function defineSetMirror(name, getArray) {
+  let ref = getArray(), set = new Set(ref);
+  Object.defineProperty(RiTa, name, {
+    configurable: true, enumerable: false,
+    get() {
+      if (ref !== (ref = getArray())) set = new Set(ref);
+      return set;
+    }
+  });
+}
+defineSetMirror('STOP_WORDS_SET', () => RiTa.STOP_WORDS);
+defineSetMirror('MASS_NOUNS_SET', () => RiTa.MASS_NOUNS);
+defineSetMirror('QUESTIONS_SET', () => RiTa.QUESTIONS);
 
 const ONLY_PUNCT = /^[\p{P}|\+|-|<|>|\^|\$|\ufffd|`]*$/u;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;

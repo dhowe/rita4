@@ -384,7 +384,7 @@ class Tagger {
           // transform 7: if a word has been categorized as a common noun 
           // and it ends with "s", then set its type to plural noun (NNS)
           if (word.match(/^.*[^s]s$/)) {
-            if (!this.RiTa.MASS_NOUNS.includes(word)) {
+            if (!this.RiTa.MASS_NOUNS_SET.has(word)) {
               tag = "nns";
             }
           }
