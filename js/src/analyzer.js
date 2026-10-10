@@ -11,6 +11,7 @@ class Analyzer {
 
   constructor(parent) {
     this.cache = {};
+    this._cacheRef = null; // tracks lexicon.data identity for cache invalidation
     this.RiTa = parent;
     this.lts = undefined;
   }
@@ -55,12 +56,18 @@ class Analyzer {
 
   analyzeWord(word, opts = {}) {
 
+    // invalidate the cache if the lexicon data was swapped out
+    let lex = this.RiTa.lexicon;
+    if (this._cacheRef !== lex.data) {
+      this.cache = {};
+      this._cacheRef = lex.data;
+    }
+
     // check the cache first
-    let result = this.RiTa.CACHING && this.cache[word];
+    let result = this.RiTa.CACHING ? this.cache[word] : undefined;
     if (typeof result === 'undefined') {
 
       let slash = '/', delim = '-';
-      let lex = this.RiTa.lexicon
       let phones = word, syllables = word, stresses = word;
       let rawPhones = lex.rawPhones(word, { noLts: true })
         || this._computeRawPhones(word, lex, opts);

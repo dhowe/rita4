@@ -809,6 +809,79 @@ describe('Core', () => {
     ok(!RiTa.findStem("writing"));
   });
 
+  it('Should not match Object.prototype members in the lexicon', function () {
+
+    // Regression: prototype-chain leaks made hasWord() true for inherited props
+    ['toString', 'constructor', 'valueOf', 'hasOwnProperty', '__proto__', 'isPrototypeOf'].forEach(w => {
+      ok(!RiTa.hasWord(w), w + ' should not be a word');
+    });
+    ok(RiTa.hasWord('dog'), 'dog should still be a word');
+  });
+
+  it('Should handle words matching Object.prototype members in concordance', function () {
+
+    // Regression: Concorder used a plain {} so keys like 'constructor' collided
+    // with inherited members (the old Firefox 'watch' bug)
+    let data = RiTa.concordance('constructor toString watch');
+    expect(data).eql({ constructor: 1, toString: 1, watch: 1 });
+    ok(RiTa.kwic('watch').length === 1);
+    ok(RiTa.kwic('toString').length === 1);
+    ok(RiTa.kwic('nonexistentword').length === 0);
+  });
+
+  it('Should call isVowel and isConsonant case-insensitively', function () {
+
+    // Regression: uppercase letters were silently rejected
+    ok(RiTa.isVowel('A'));
+    ok(RiTa.isVowel('a'));
+    ok(RiTa.isConsonant('B'));
+    ok(RiTa.isConsonant('b'));
+    ok(!RiTa.isVowel('B'));
+    ok(!RiTa.isConsonant('A'));
+    ok(!RiTa.isConsonant('1'));
+    ok(!RiTa.isConsonant(''));
+    ok(!RiTa.isVowel(''));
+    ok(!RiTa.isConsonant(undefined));
+
+    // must return strict booleans
+    expect(RiTa.isVowel('')).to.be.false;
+    expect(RiTa.isConsonant('')).to.be.false;
+    expect(RiTa.isVowel(undefined)).to.be.false;
+    expect(RiTa.isConsonant(undefined)).to.be.false;
+  });
+
+  it('Should return strict booleans from isPunct and isAbbrev', function () {
+
+    // Regression: isPunct('') returned '' and isAbbrev(1) returned undefined
+    expect(RiTa.isPunct('')).to.be.false;
+    expect(RiTa.isPunct(',')).to.be.true;
+    expect(RiTa.isAbbrev(123)).to.be.false;
+    expect(RiTa.isAbbrev(null)).to.be.false;
+    expect(RiTa.isAbbrev('Dr.')).to.be.true;
+  });
+
+  it('Should cache analyzer results and invalidate on lexicon swap', function () {
+
+    // Regression: RiTa.CACHING was never initialized, so the cache was dead
+    ok(RiTa.CACHING, 'CACHING should default to true');
+
+    let orig = RiTa.lexicon.data;
+    try {
+      let before = RiTa.phones('cat');
+      ok(before.length > 0);
+
+      // swapping in a custom lexicon must invalidate stale cached phones
+      RiTa.lexicon.data = { cat: ['s-ae1-t', 'nn'] };
+      expect(RiTa.phones('cat')).eq('s-ae-t');
+
+      // restoring the default dict must invalidate again
+      RiTa.lexicon.data = orig;
+      expect(RiTa.phones('cat')).eq(before);
+    } finally {
+      RiTa.lexicon.data = orig;
+    }
+  });
+
   function ok(a, m) { expect(a, m).to.be.true; }
   function def(res, m) { expect(res, m).to.not.be.undefined; }
   function eql(a, b, m) { expect(a).eql(b, m); }

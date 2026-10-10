@@ -170,7 +170,7 @@ class RiTa {
    * @returns {boolean} - true if the character is a vowel, else false
    */
   static isVowel(char) {
-    return char && char.length === 1 && RiTa.VOWELS.includes(char);
+    return !!(char && char.length === 1 && RiTa.VOWELS.includes(char.toLowerCase()));
   }
 
   /**
@@ -179,8 +179,8 @@ class RiTa {
    * @returns {boolean} - true if the character is a consonant, else false
    */
   static isConsonant(char) {
-    return (char && char.length === 1 && !RiTa.VOWELS.includes(char)
-      && IS_LETTER.test(char));
+    return !!(char && char.length === 1 && !RiTa.VOWELS.includes(char.toLowerCase())
+      && IS_LETTER.test(char.toLowerCase()));
   }
 
   /**
@@ -284,6 +284,7 @@ class RiTa {
       let check = input.trim().toLowerCase();
       return RiTa.ABRV.some(a => a.toLowerCase() === check);
     }
+    return false;
   }
 
   /**
@@ -394,7 +395,7 @@ class RiTa {
    * @returns {boolean} true if every character of 'text' is punctuation, else false
    */
   static isPunct(text) {
-    return text && text.length && ONLY_PUNCT.test(text);
+    return !!(text && text.length && ONLY_PUNCT.test(text));
   }
 
 
@@ -771,6 +772,9 @@ Stemmer.tokenizer = RiTa.tokenizer;
 // MESSAGES
 RiTa.SILENT = false;
 RiTa.SILENCE_LTS = false;
+
+// Enable the per-word phone cache in Analyzer (parity with the Java impl)
+RiTa.CACHING = true;
 
 // CONSTANTS
 RiTa.VERSION = '[VI]{{inject}}[/VI]'; // injected by build script

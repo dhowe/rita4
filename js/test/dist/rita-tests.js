@@ -643,6 +643,56 @@ describe("Core", () => {
     expected = ['I had a visit from my "friend" the tax man.'];
     eql(output, expected);
   });
+  it("Should not match Object.prototype members in the lexicon", function() {
+    ["toString", "constructor", "valueOf", "hasOwnProperty", "__proto__", "isPrototypeOf"].forEach((w) => {
+      ok(!RiTa.hasWord(w), w + " should not be a word");
+    });
+    ok(RiTa.hasWord("dog"), "dog should still be a word");
+  });
+  it("Should handle words matching Object.prototype members in concordance", function() {
+    let data = RiTa.concordance("constructor toString watch");
+    expect(data).eql({ constructor: 1, toString: 1, watch: 1 });
+    ok(RiTa.kwic("watch").length === 1);
+    ok(RiTa.kwic("toString").length === 1);
+    ok(RiTa.kwic("nonexistentword").length === 0);
+  });
+  it("Should call isVowel and isConsonant case-insensitively", function() {
+    ok(RiTa.isVowel("A"));
+    ok(RiTa.isVowel("a"));
+    ok(RiTa.isConsonant("B"));
+    ok(RiTa.isConsonant("b"));
+    ok(!RiTa.isVowel("B"));
+    ok(!RiTa.isConsonant("A"));
+    ok(!RiTa.isConsonant("1"));
+    ok(!RiTa.isConsonant(""));
+    ok(!RiTa.isVowel(""));
+    ok(!RiTa.isConsonant(void 0));
+    expect(RiTa.isVowel("")).to.be.false;
+    expect(RiTa.isConsonant("")).to.be.false;
+    expect(RiTa.isVowel(void 0)).to.be.false;
+    expect(RiTa.isConsonant(void 0)).to.be.false;
+  });
+  it("Should return strict booleans from isPunct and isAbbrev", function() {
+    expect(RiTa.isPunct("")).to.be.false;
+    expect(RiTa.isPunct(",")).to.be.true;
+    expect(RiTa.isAbbrev(123)).to.be.false;
+    expect(RiTa.isAbbrev(null)).to.be.false;
+    expect(RiTa.isAbbrev("Dr.")).to.be.true;
+  });
+  it("Should cache analyzer results and invalidate on lexicon swap", function() {
+    ok(RiTa.CACHING, "CACHING should default to true");
+    let orig = RiTa.lexicon.data;
+    try {
+      let before = RiTa.phones("cat");
+      ok(before.length > 0);
+      RiTa.lexicon.data = { cat: ["s-ae1-t", "nn"] };
+      expect(RiTa.phones("cat")).eq("s-ae-t");
+      RiTa.lexicon.data = orig;
+      expect(RiTa.phones("cat")).eq(before);
+    } finally {
+      RiTa.lexicon.data = orig;
+    }
+  });
   function ok(a, m) {
     expect(a, m).to.be.true;
   }
