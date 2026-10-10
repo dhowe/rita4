@@ -828,7 +828,7 @@ defineSetMirror('STOP_WORDS_SET', () => RiTa.STOP_WORDS);
 defineSetMirror('MASS_NOUNS_SET', () => RiTa.MASS_NOUNS);
 defineSetMirror('QUESTIONS_SET', () => RiTa.QUESTIONS);
 
-const ONLY_PUNCT = /^[\p{P}|\+|-|<|>|\^|\$|\ufffd|`]*$/u;
+const ONLY_PUNCT = /^[\p{P}|+|-|<|>|^|$|\ufffd|`]*$/u;
 const IS_LETTER = /^[a-z\u00C0-\u00ff]+$/;
 
 RiTa.riscript = new RiScript({ RiTa });

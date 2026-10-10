@@ -314,28 +314,28 @@ class Tokenizer {
 }
 
 const UNTAG_RE = [
-  /^ *<[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/> *$/i, // empty tags <br/> <img /> etc. -> like a normal word
-  /^ *<([a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*[a-z0-9='"#;:&\s\-\+\.\?]|[a-z])> *$/i, // opening tags <a>, <p> etc. -> no space after 
-  /^ *<\/[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*> *$/i, // closing tags </a> </p> etc. -> no space before
+  /^ *<[a-z][a-z0-9='"#;:&\s\-+/.?]*\/> *$/i, // empty tags <br/> <img /> etc. -> like a normal word
+  /^ *<([a-z][a-z0-9='"#;:&\s\-+/.?]*[a-z0-9='"#;:&\s\-+.?]|[a-z])> *$/i, // opening tags <a>, <p> etc. -> no space after 
+  /^ *<\/[a-z][a-z0-9='"#;:&\s\-+/.?]*> *$/i, // closing tags </a> </p> etc. -> no space before
   /^ *<!DOCTYPE[^>]*> *$/i, // <!DOCTYPE> -> like a normal word
   /^ *<!--[^->]*--> *$/i // <!-- --> -> like a normal word
 ];
 
 const LT_RE = /^ *< *$/;
 const GT_RE = /^ *> *$/;
-const TAGSTART_RE = /^ *[!\-\/] *$/;
-const TAGEND_RE = /^ *[\-\/] *$/
-const NOSP_AF_PUNCT_RE = /^[\^\*\$\/\u2044#\-@\u00b0\u2012\u2013\u2014]+$/;
-const TAG = "TAG", UNDER_RE = /([0-9a-zA-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]|[\.\,])_([0-9a-zA-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF])/g;
-const LB_RE = /^[\[\(\{\u27e8]+$/, RB_RE = /^[\)\]\}\u27e9]+$/;
+const TAGSTART_RE = /^ *[!\-/] *$/;
+const TAGEND_RE = /^ *[-/] *$/
+const NOSP_AF_PUNCT_RE = /^[\^*$/\u2044#\-@\u00b0\u2012\u2013\u2014]+$/;
+const TAG = "TAG", UNDER_RE = /([0-9a-zA-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF]|[.,])_([0-9a-zA-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF])/g;
+const LB_RE = /^[[({\u27e8]+$/, RB_RE = /^[)\]}\u27e9]+$/;
 const QUOTE_RE = /^[""\u201c\u201d\u2019\u2018`''\u00ab\u00bb]+$/;
 const DOMAIN_RE = /^(com|org|edu|net|xyz|gov|int|eu|hk|tw|cn|de|ch|fr)$/;
 const SQUOTE_RE = /^[\u2019\u2018`']+$/, ALPHA_RE = /^[A-Za-z’']+$/, WS_RE = / +/;
 const APOS_RE = /^[\u2019']+$/, NL_RE = /(\r?\n)+/g, WWW_RE = /^(www[0-9]?|WWW[0-9]?)$/;
-const NOSP_BF_PUNCT_RE = /^[,\.\;\:\?\!\)""\u201c\u201d\u2019\u2018`'%\u2026\u2103\^\*\u00b0\/\u2044\u2012\u2013\u2014\-@]+$/;
+const NOSP_BF_PUNCT_RE = /^[,.;:?!)""\u201c\u201d\u2019\u2018`'%\u2026\u2103^*\u00b0/\u2044\u2012\u2013\u2014\-@]+$/;
 const LINEBREAK_RE = /\r?\n/;//[\n\r\036]/;
-const URL_RE = /((http[s]?):(\/\/))?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/;
-const EMAIL_RE = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const URL_RE = /((http[s]?):(\/\/))?([-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+const EMAIL_RE = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
 const TOKENIZE_RE = [
   // save  --------
@@ -343,32 +343,32 @@ const TOKENIZE_RE = [
   /\b([Ii])[.]([Ee])[.]/g, "_$1$2_", //i.e
   /\b([Aa])[.]([Mm])[.]/g, "_$1$2_", //a.m.
   /\b([Pp])[.]([Mm])[.]/g, "_$1$2_", //p.m.
-  /\b(Cap)[\.]/g, "_Cap_", //Cap.
-  /\b([Cc])[\.]/g, "_$1_", //c.
-  /\b([Ee][Tt])[\s]([Aa][Ll])[\.]/, "_$1zzz$2_", // et al.
-  /\b(etc|ETC)[\.]/g, "_$1_", //etc.
-  /\b([Pp])[\.]([Ss])[\.]/g, "_$1$2dot_", // p.s.
-  /\b([Pp])[\.]([Ss])/g, "_$1$2_", // p.s
-  /\b([Pp])([Hh])[\.]([Dd])/g, "_$1$2$3_", // Ph.D
-  /\b([Rr])[\.]([Ii])[\.]([Pp])/g, "_$1$2$3_", // R.I.P
-  /\b([Vv])([Ss]?)[\.]/g, "_$1$2_", // vs. and v.
+  /\b(Cap)[.]/g, "_Cap_", //Cap.
+  /\b([Cc])[.]/g, "_$1_", //c.
+  /\b([Ee][Tt])[\s]([Aa][Ll])[.]/, "_$1zzz$2_", // et al.
+  /\b(etc|ETC)[.]/g, "_$1_", //etc.
+  /\b([Pp])[.]([Ss])[.]/g, "_$1$2dot_", // p.s.
+  /\b([Pp])[.]([Ss])/g, "_$1$2_", // p.s
+  /\b([Pp])([Hh])[.]([Dd])/g, "_$1$2$3_", // Ph.D
+  /\b([Rr])[.]([Ii])[.]([Pp])/g, "_$1$2$3_", // R.I.P
+  /\b([Vv])([Ss]?)[.]/g, "_$1$2_", // vs. and v.
   /\b([Mm])([Rr]|[Ss]|[Xx])\./g, "_$1$2_", // Mr. Ms. and Mx.
-  /\b([Dd])([Rr])[\.]/g, "_$1$2_", // Dr.
-  /\b([Pp])([Ff])[\.]/g, "_$1$2_", // Pf.
-  /\b([Ii])([Nn])([Dd]|[Cc])[\.]/g, "_$1$2$3_", // Ind. and Inc.
-  /\b([Cc])([Oo])[\.][\,][\s]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dcs$3$4$5_", // co., ltd.
-  /\b([Cc])([Oo])[\.][\s]([Ll])([Tt])([Dd])[\.]/g, "_$1$2ds$3$4$5_", // co. ltd.
-  /\b([Cc])([Oo])[\.][\,]([Ll])([Tt])([Dd])[\.]/g, "_$1$2dc$3$4$5_", // co.,ltd.
-  /\b([Cc])([Oo])([Rr]?)([Pp]?)[\.]/g, "_$1$2$3$4_", // Corp. and Co.
-  /\b([Ll])([Tt])([Dd])[\.]/g, "_$1$2$3_", // ltd.
+  /\b([Dd])([Rr])[.]/g, "_$1$2_", // Dr.
+  /\b([Pp])([Ff])[.]/g, "_$1$2_", // Pf.
+  /\b([Ii])([Nn])([Dd]|[Cc])[.]/g, "_$1$2$3_", // Ind. and Inc.
+  /\b([Cc])([Oo])[.][,][\s]([Ll])([Tt])([Dd])[.]/g, "_$1$2dcs$3$4$5_", // co., ltd.
+  /\b([Cc])([Oo])[.][\s]([Ll])([Tt])([Dd])[.]/g, "_$1$2ds$3$4$5_", // co. ltd.
+  /\b([Cc])([Oo])[.][,]([Ll])([Tt])([Dd])[.]/g, "_$1$2dc$3$4$5_", // co.,ltd.
+  /\b([Cc])([Oo])([Rr]?)([Pp]?)[.]/g, "_$1$2$3$4_", // Corp. and Co.
+  /\b([Ll])([Tt])([Dd])[.]/g, "_$1$2$3_", // ltd.
   /\b(prof|Prof|PROF)\./g, "_$1_", //Prof. 
   //   /(\w+([\.-_]?\w+)*)@(\w+([\.-_]?\w+)*)\.(\w{2,3})/g, "$1__AT__$3.$5", //email addresses
   // /^\w+([\.-]?\w+)+@\w+([\.:]?\w+)+(\.[a-zA-Z0-9]{2,3})+$/g, "$1__AT__$2", //email addresses
   /\b([\w.]+)@(\w+\.\w+)/g, "$1__AT__$2",
-  /\b((http[s]?):(\/\/))([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/g, "$2COLON$3$4$5", //urls with http(s)
+  /\b((http[s]?):(\/\/))([-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g, "$2COLON$3$4$5", //urls with http(s)
   //decimal #
-  /([\-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_", //(-)27.3
-  /([\-]?[0-9]+)\.([0-9]+)e([\-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_", //(-)1.2e10
+  /([-]?[0-9]+)\.([0-9]+)/g, "$1DECIMALDOT$2_", //(-)27.3
+  /([-]?[0-9]+)\.([0-9]+)e([-]?[0-9]+)/g, "_$1DECIMALDOT$2POWERE$3_", //(-)1.2e10
   /([0-9]{1,3}),([0-9]{3})/g, "$1_DECIMALCOMMA_$2", // large numbers like 19,700 or 200,000,000.13
   /([A-Za-z0-9])\.([A-Za-z0-9])/g, "$1_DECIMALDOT_$2", //www.example.com
 
@@ -380,12 +380,12 @@ const TOKENIZE_RE = [
   ///\036/g, " _RECORDSEPARATOR_ ", // RS
   //--------------------------
   /\.\.\.\s/g, "_elipsis_ ",
-  /([\?!\"\u201C\.,;:@#$%&])/g, " $1 ",
+  /([?!"\u201C.,;:@#$%&])/g, " $1 ",
   /\u2026/g, " \u2026 ",
   /\s+/g, ' ',
   /,([^0-9])/g, " , $1",
-  /([^.])([.])([\])}>\"'\u2019]*)\s*$/g, "$1 $2$3 ",
-  /([\[\](){}<>\u27e8\u27e9])/g, " $1 ",
+  /([^.])([.])([\])}>"'\u2019]*)\s*$/g, "$1 $2$3 ",
+  /([[\](){}<>\u27e8\u27e9])/g, " $1 ",
   /--/g, " -- ",
   /\u2012/g, " \u2012 ", //" ‒ "
   /\u2013/g, " \u2013 ", // " — "
@@ -425,13 +425,13 @@ const TOKENIZE_RE = [
   /_([Cc])([Oo])dcs([Ll])([Tt])([Dd])_/g, "$1$2.,_$3$4$5.", // co., ltd.
   /_([Cc])([Oo])ds([Ll])([Tt])([Dd])_/g, "$1$2._$3$4$5.", // co. ltd.
   /_(prof|PROF|Prof)_/g, "$1.", //Prof.
-  /([\-]?[0-9]+)DECIMALDOT([0-9]+)_/g, "$1.$2", //(-)27.3
-  /_([\-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([\-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
+  /([-]?[0-9]+)DECIMALDOT([0-9]+)_/g, "$1.$2", //(-)27.3
+  /_([-]?[0-9]+)\DECIMALDOT([0-9]+)POWERE([-]?[0-9]+)_/g, "$1.$2e$3", //(-)1.2e(-)9
   /_DECIMALCOMMA_/g, ",", // large numbers like 200,000,000.13
   /_DECIMALDOT_/g, ".",
   // /(\w+([\.-]?\w+)*)__AT__(\w+([\.-]?\w+)*)\.(\w{2,3})/g, "$1@$3.$5",
   /__AT__/g, "@",
-  /((http[s]?)COLON(\/\/))([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/g, "$2:$3$4$5",
+  /((http[s]?)COLON(\/\/))([-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b)([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g, "$2:$3$4$5",
   /_LINEFEED_/g, "\n", // LF
   /_CARRIAGERETURN_/g, "\r", // CR
   /_CARRIAGERETURNLINEFEED_/g, "\r\n", // CR LF
@@ -455,7 +455,7 @@ const CONTRACTS_RE = [
   /['\u2019]re /g, " are "
 ];
 
-const TAG_RE = /(<\/?[a-z][a-z0-9='"#;:&\s\-\+\/\.\?]*\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
+const TAG_RE = /(<\/?[a-z][a-z0-9='"#;:&\s\-+/.?]*\/?>|<!DOCTYPE[^>]*>|<!--[^>-]*-->)/i; // html tags (rita#103)
 const POPTAG_RE = new RegExp(`_${TAG}[0-9]+_`);
 
 export default Tokenizer;
