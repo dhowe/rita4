@@ -155,7 +155,7 @@ class Analyzer {
   }
 }
 
-const HAS_LETTER_RE = /[a-zA-Z]+/;
+//const HAS_LETTER_RE = /[a-zA-Z]+/;
 
 /**
  * Mapping from Arpabet phonemes (lowercase in RiTa) to IPA symbols.

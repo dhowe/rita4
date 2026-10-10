@@ -412,6 +412,7 @@ export default class BackoffModel extends SuffixGram {
   }
 
   build(opts = {}) {
+    let ts;
     if (opts.verbose) ts = Date.now();
     this.tokenCount = 0;
     if (this.tokens && this.tokens.length > 0) {

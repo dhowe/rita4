@@ -1040,4 +1040,16 @@ describe("Markov", function() {
     expect(() => BackoffModel.resolveOpts(3, { maxBacktracks: 50 })).to.not.throw();
     expect(BackoffModel.resolveOpts(3, { maxBacktracks: 50 }).maxBacktracks).to.equal(50);
   });
+  it("should build with verbose enabled", function() {
+    const rm = new RiMarkov(2);
+    rm.addText("The quick brown fox jumped over the lazy dog. The lazy dog slept. The dog ran.");
+    const log = console.log;
+    try {
+      console.log = () => {
+      };
+      expect(() => rm.model.build({ verbose: true })).to.not.throw();
+    } finally {
+      console.log = log;
+    }
+  });
 });

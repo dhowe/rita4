@@ -45,7 +45,7 @@ class Util {
 
     if (!input || !input.length) return '';
 
-    let dbug, internuclei = [];
+    let dbug = false, internuclei = [];
     let syllables = []; // returned data structure
     let sylls = typeof input == 'string' ? input.split('-') : input;
 

@@ -32,5 +32,8 @@ jobs:
       - run: npm run build
         working-directory: js
 
+      - run: npm test
+        working-directory: js
+
       - run: npm run test:dist
         working-directory: js

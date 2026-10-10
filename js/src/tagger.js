@@ -692,9 +692,6 @@ class Tagger {
       //next word is a verb, last part is rb/verb
       tag = "rb";
     }
-    else if (result[i + 1] && result[i + 1].startsWith("v") && tag === 'jj') {
-      tag = "rb"
-    }
     else if (tag === 'jj' && context[i - 1] && ARTICLES.includes(context[i - 1].toLowerCase().trim())) {
       if (!context[i + 1] || (result[i + 1] && /^(v|cc|in|md|w)/.test(result[i + 1])) || this.RiTa.isPunct(context[i + 1])) {
         tag = 'nn';
